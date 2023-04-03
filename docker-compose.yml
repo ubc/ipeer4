@@ -64,6 +64,29 @@ services:
             - '/dev/shm:/dev/shm'
         networks:
             - sail
+    adminer:
+      image: "adminer:4"
+      ports:
+        - "${ADMINER_PORT}:8080"
+      depends_on:
+        - mysql
+      environment:
+        ADMINER_PLUGINS: 'env-var-login'
+        DB_DRIVER: 'mysql'
+        DB_HOST: 'mysql'
+        DB_USERNAME: '${DB_USERNAME}'
+        DB_PASSWORD: '${DB_PASSWORD}'
+        DB_NAME: '${DB_DATABASE}'
+      volumes:
+        # needs to be a bind mount instead of the default volume mount or
+        # docker will create a directory instead of mounting the single files
+        - type: bind
+          source: ./docker/dev/adminer/env-var-login.php
+          target: /var/www/html/plugins/env-var-login.php
+          read_only: true
+      networks:
+          - sail
+
 networks:
     sail:
         driver: bridge
