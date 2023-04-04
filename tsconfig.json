@@ -1,0 +1,7 @@
+{
+  "compilerOptions": {
+    "types": [
+      "unplugin-icons/types/vue"
+    ]
+  }
+}

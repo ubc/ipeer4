@@ -1,6 +1,11 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import vue from '@vitejs/plugin-vue';
+// all the unplugin stuff is just for icons, allows auto importing, locally
+// stored icons, and only the icons used are in the prod build
+import Icons from 'unplugin-icons/vite'
+import IconsResolver from 'unplugin-icons/resolver'
+import Components from 'unplugin-vue-components/vite'
 
 export default defineConfig({
   plugins: [
@@ -26,5 +31,17 @@ export default defineConfig({
         },
       },
     }),
+    Components({
+      resolvers: [
+        IconsResolver(),
+      ],
+    }),
+    Icons({ compiler: 'vue3' }),
   ],
+  resolve: {
+    alias: {
+      '@': '/resources/js',
+      '@img': '/resources/img',
+    },
+  },
 });
