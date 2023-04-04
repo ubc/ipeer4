@@ -79,7 +79,7 @@ services:
         DB_NAME: '${DB_DATABASE}'
       volumes:
         # needs to be a bind mount instead of the default volume mount or
-        # docker will create a directory instead of mounting the single files
+        # docker will create a directory instead of mounting the single file
         - type: bind
           source: ./docker/dev/adminer/env-var-login.php
           target: /var/www/html/plugins/env-var-login.php
