@@ -25,7 +25,7 @@ export default {
     <q-header bordered>
       <q-toolbar>
         <q-toolbar-title class='q-pt-md'>
-          <q-btn stretch flat no-caps href='/'>
+          <q-btn stretch flat no-caps to='/'>
             <div class='row items-baseline'>
               <img src="@img/ipeer_logo.png" alt='iPeer logo' />
               <span class='text-h4 q-ml-xs'>iPeer</span>

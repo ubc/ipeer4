@@ -4,6 +4,6 @@ import axios from 'axios'
 // pinia stores using a different axios from the root app
 const instance = axios.create({
   baseURL: '/api'
-});
+})
 
-export default instance;
+export default instance
