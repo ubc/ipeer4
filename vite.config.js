@@ -1,6 +1,7 @@
-import { defineConfig } from 'vite';
-import laravel from 'laravel-vite-plugin';
-import vue from '@vitejs/plugin-vue';
+import { defineConfig } from 'vite'
+import laravel from 'laravel-vite-plugin'
+import vue from '@vitejs/plugin-vue'
+import { quasar, transformAssetUrls } from '@quasar/vite-plugin'
 // all the unplugin stuff is just for icons, allows auto importing, locally
 // stored icons, and only the icons used are in the prod build
 import Icons from 'unplugin-icons/vite'
@@ -30,6 +31,9 @@ export default defineConfig({
           includeAbsolute: false,
         },
       },
+    }),
+    quasar({
+      sassVariables: 'resources/css/quasar-variables.sass'
     }),
     Components({
       resolvers: [
