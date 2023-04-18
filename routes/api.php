@@ -18,5 +18,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 Route::namespace('App\Http\Controllers\Api')->group(function() {
-    Route::get('/version', 'VersionController@index');
+    Route::get('/version', 'GuestActionsController@getVersion');
+    Route::post('/register', 'GuestActionsController@registerUser');
+    Route::post('/login', 'LoginController@authenticate');
 });

@@ -11,33 +11,39 @@ export default {
   data() {
     return {
       username: '',
+      name: '',
+      email: '',
       password: '',
       isPwd: true,
     }
   },
   methods: {
-    onReset() {
-      this.username = ''
-      this.password = ''
-    },
     onSubmit() {
-      this.axios.post('/login', {
+      console.log("Submit")
+      this.axios.post('/register', {
         username: this.username,
-        password: this.password,
+        name: this.name,
+        email: this.email,
+        password: this.password
       }).then((resp) => {
         this.$q.notify({
           type: 'positive',
-          message: 'Login Successful!'
+          message: 'User created successfully, please log in'
         })
-        this.$router.push('/admin')
+        this.$router.push('/login')
       }).catch((err) => {
         console.log(err)
         this.$q.notify({
           type: 'negative',
-          message: 'Login failed'
+          message: 'Failed to create user: ' + err.message
         })
       })
-
+    },
+    onReset() {
+      this.username = ''
+      this.password = ''
+      this.name = ''
+      this.email = ''
     },
   }
 }
@@ -46,7 +52,7 @@ export default {
 <template>
   <div class='row justify-center'>
     <div class='column col-xs-12 col-sm-8 col-md-6 col-lg-4'>
-      <h4 class='q-mt-none q-mb-sm'>Login</h4>
+      <h4 class='q-mt-none q-mb-sm'>Register User</h4>
       <q-form @submit="onSubmit" @reset="onReset"
               class='column q-col-gutter-md'>
         <q-input v-model="username" label="Username"
@@ -55,18 +61,22 @@ export default {
         <q-input v-model="password" label="Password"
                  :rules="[val => !!val || 'Password is required']"
                  :type="isPwd ? 'password' : 'text'"
-                 autocomplete='current-password'>
+                 autocomplete='new-password'>
           <template v-slot:append>
             <q-icon
-              :name="isPwd ? 'visibility' : 'visibility_off' "
+              :name="isPwd ? 'visibility' : 'visibility_off'"
               class="cursor-pointer"
               @click="isPwd = !isPwd"
             />
           </template>
         </q-input>
 
+        <q-input v-model="name" label="Name" />
+
+        <q-input v-model="email" type="email" label="Email" />
+
         <div class='q-pt-lg row justify-between'>
-          <q-btn label="Login" type="submit" color="primary" />
+          <q-btn label="Register" type="submit" color="primary" />
           <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" />
         </div>
       </q-form>

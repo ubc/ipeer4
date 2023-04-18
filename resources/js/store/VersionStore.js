@@ -19,12 +19,12 @@ export const useVersionStore = defineStore('version', {
     get() {
       axios.get('version')
         .then((response) => {
-          console.log(response.data)
           this.full = response.data.full
           this.debug = response.data.debug
           this.mode = response.data.mode
         })
         .catch((err) => {
+          // TODO: real error message
           console.log(err)
         })
     },

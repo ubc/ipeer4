@@ -18,9 +18,8 @@ export default {
 </script>
 
 <template>
-  <div class='row justify-evenly'>
-    <q-btn to="/login" label="Login" color='primary' />
-    <q-btn to="/register" label="Register" color='primary' />
+  <div>
+    Admin Home Page
   </div>
 </template>
 

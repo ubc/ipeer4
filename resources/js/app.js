@@ -2,7 +2,7 @@ import '../css/app.css';
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
-import { Quasar } from 'quasar'
+import { Quasar, Notify } from 'quasar'
 import axios from '@/plugins/axios'
 import router from '@/plugins/router'
 import App from '@/App.vue'
@@ -17,7 +17,9 @@ const app = createApp(App)
 app.config.globalProperties.axios = axios
 app.use(pinia)
 app.use(Quasar, {
-  plugins: {},
+  plugins: {
+    Notify,
+  },
   iconSet: quasarIconSet,
 })
 app.use(router)
