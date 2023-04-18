@@ -3,8 +3,8 @@ import '../css/app.css';
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import { Quasar, Notify } from 'quasar'
-import axios from '@/plugins/axios'
-import router from '@/plugins/router'
+import axios from '@/plugin/axios'
+import router from '@/plugin/router'
 import App from '@/App.vue'
 
 // quasar icons & css

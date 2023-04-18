@@ -1,8 +1,8 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-import HomePage from '@/pages/HomePage.vue'
-import LoginPage from '@/pages/LoginPage.vue'
-import RegisterPage from '@/pages/RegisterPage.vue'
-import AdminHomePage from '@/pages/admin/AdminHomePage.vue'
+import HomePage from '@/page/HomePage.vue'
+import LoginPage from '@/page/LoginPage.vue'
+import RegisterPage from '@/page/RegisterPage.vue'
+import AdminHomePage from '@/page/admin/AdminHomePage.vue'
 
 const routes = [
   { path: '/', component: HomePage },
