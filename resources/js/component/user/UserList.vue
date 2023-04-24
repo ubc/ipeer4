@@ -46,7 +46,11 @@ export default {
           console.log(err)
         })
     },
-    // called by qtable to load other pages
+    // qtable event handler for clicking on a user row
+    showUser(ev, row, index) {
+      this.$router.push({name: 'user', params: { id: row.id}})
+    },
+    // qtable event handler for paging/sorting 
     updateUsers(props) {
       const { page, rowsPerPage, sortBy, descending } = props.pagination
       const params = new URLSearchParams({
