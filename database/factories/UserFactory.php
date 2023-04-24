@@ -26,6 +26,8 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => $username, # model will hash it for us
             'remember_token' => Str::random(10),
+            'created_at' => fake()->iso8601(),
+            'updated_at' => fake()->iso8601(),
         ];
     }
 

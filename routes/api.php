@@ -3,6 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\Api\UserController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -21,4 +23,8 @@ Route::namespace('App\Http\Controllers\Api')->group(function() {
     Route::get('/version', 'GuestActionsController@getVersion');
     Route::post('/register', 'GuestActionsController@registerUser');
     Route::post('/login', 'LoginController@authenticate');
+    // login required routes
+    Route::middleware('auth:sanctum')->group(function() {
+        Route::apiResource('user', UserController::class);
+    });
 });

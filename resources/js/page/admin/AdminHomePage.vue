@@ -1,9 +1,11 @@
 <script>
 import { mapStores } from 'pinia'
 //import { useVersionStore } from '@/store/VersionStore'
+import UserList from '@/component/user/UserList.vue'
 
 export default {
   components: {
+    UserList
   },
   computed: {
     //...mapStores(useVersionStore)
@@ -20,6 +22,7 @@ export default {
 <template>
   <div>
     Admin Home Page
+    <UserList />
   </div>
 </template>
 
