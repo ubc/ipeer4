@@ -57,6 +57,9 @@ export default {
       </div>
     </q-footer>
 
+    <!-- shows a load bar for all ajax actions -->
+    <q-ajax-bar size='5px' />
+
   </q-layout>
 </template>
 

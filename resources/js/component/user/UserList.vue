@@ -20,7 +20,6 @@ export default {
         {name: 'updated_at', field: 'updated_at', label: 'Updated',
          sortable: true},
       ],
-      loading: false,
       pagination: {
         sortBy: 'id',
         descending: false,
@@ -33,7 +32,6 @@ export default {
   },
   methods: {
     getUsers(url='user') {
-      this.loading = true
       this.axios.get(url)
         .then((response) => {
           this.users = response.data
@@ -46,9 +44,6 @@ export default {
         .catch((err) => {
           // TODO: real error message
           console.log(err)
-        })
-        .finally(() => {
-          this.loading = false
         })
     },
     // called by qtable to load other pages
@@ -80,11 +75,11 @@ export default {
         :rows="users.data"
         :columns="columns"
         :rows-per-page-options='[15,30,50,100]'
-        :loading='loading'
-        v-model:pagination="pagination"
-        @request='updateUsers'
         :binary-state-sort='true'
         row-key="id"
+        v-model:pagination="pagination"
+        @request='updateUsers'
+        @row-click='showUser'
     />
   </div>
 </template>
