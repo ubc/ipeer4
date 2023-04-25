@@ -1,7 +1,20 @@
+import UserPage from '@/page/user/UserPage.vue'
 import UserInfo from '@/component/user/UserInfo.vue'
+import UserForm from '@/component/user/UserForm.vue'
 
 export default {
-  path: '/user/:id',
-  name: 'user',
-  component: UserInfo
+  path: '/user',
+  component: UserPage,
+  children: [
+    {
+      path: ':id',
+      name: 'userInfo',
+      component: UserInfo
+    },
+    {
+      path: 'new',
+      name: 'userNew',
+      component: UserForm
+    }
+  ]
 }

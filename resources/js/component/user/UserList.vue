@@ -48,7 +48,7 @@ export default {
     },
     // qtable event handler for clicking on a user row
     showUser(ev, row, index) {
-      this.$router.push({name: 'user', params: { id: row.id}})
+      this.$router.push({name: 'userInfo', params: { id: row.id}})
     },
     // qtable event handler for paging/sorting 
     updateUsers(props) {
@@ -71,9 +71,6 @@ export default {
 
 <template>
   <div>
-    <pre>
-    {{ pagination }}
-    </pre>
     <q-table
         title="Users"
         :rows="users.data"
@@ -84,7 +81,12 @@ export default {
         v-model:pagination="pagination"
         @request='updateUsers'
         @row-click='showUser'
-    />
+    >
+      <template v-slot:top-left>
+        <q-btn color="primary" icon='add' label="Add User" @click="addUser" 
+          to='/user/new' />
+      </template>
+    </q-table>
   </div>
 </template>
 
