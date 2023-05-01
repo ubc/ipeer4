@@ -20,10 +20,10 @@ export default {
 </script>
 
 <template>
-  <div>
+  <q-page padding>
     Admin Home Page
     <UserList />
-  </div>
+  </q-page>
 </template>
 
 <style scoped>

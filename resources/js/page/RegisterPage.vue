@@ -50,7 +50,7 @@ export default {
 </script>
 
 <template>
-  <div class='row justify-center'>
+  <q-page padding class='row justify-center'>
     <div class='column col-xs-12 col-sm-8 col-md-6 col-lg-4'>
       <h4 class='q-mt-none q-mb-sm'>Register User</h4>
       <q-form @submit="onSubmit" @reset="onReset"
@@ -81,7 +81,7 @@ export default {
         </div>
       </q-form>
     </div>
-  </div>
+  </q-page>
 </template>
 
 <style scoped>

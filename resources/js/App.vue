@@ -37,13 +37,8 @@ export default {
       <q-tabs align="left">
         <q-route-tab to="/admin" label="Admin" />
       </q-tabs>
-    </q-header>
 
-    <q-page-container>
-      <div class='q-pa-md'>
-        <router-view />
-      </div>
-    </q-page-container>
+    </q-header>
 
     <q-footer bordered class="bg-grey-2 text-grey-8">
       <div class='text-center q-my-md'>
@@ -54,6 +49,10 @@ export default {
         </p>
       </div>
     </q-footer>
+
+    <q-page-container>
+      <router-view />
+    </q-page-container>
 
     <!-- shows a load bar for all ajax actions -->
     <q-ajax-bar size='5px' />
