@@ -1,5 +1,6 @@
 <script>
 import { mapStores } from 'pinia'
+import notify from '@/plugin/notify'
 //import { useVersionStore } from '@/store/VersionStore'
 
 export default {
@@ -26,17 +27,10 @@ export default {
         email: this.email,
         password: this.password
       }).then((resp) => {
-        this.$q.notify({
-          type: 'positive',
-          message: 'User created successfully, please log in'
-        })
+        notify.ok('User created successfully, please log in')
         this.$router.push('/login')
       }).catch((err) => {
-        console.log(err)
-        this.$q.notify({
-          type: 'negative',
-          message: 'Failed to create user: ' + err.message
-        })
+        notify.err('Failed to create user: ' + err.message)
       })
     },
     onReset() {

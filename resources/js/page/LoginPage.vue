@@ -1,4 +1,5 @@
 <script>
+import notify from '@/plugin/notify'
 import { mapStores } from 'pinia'
 //import { useVersionStore } from '@/store/VersionStore'
 
@@ -25,20 +26,14 @@ export default {
         username: this.username,
         password: this.password,
       }).then((resp) => {
-        this.$q.notify({
-          type: 'positive',
-          message: 'Login Successful!'
-        })
+        notify.ok('Login Successful')
         this.$router.push('/admin')
       }).catch((err) => {
-        console.log(err)
-        this.$q.notify({
-          type: 'negative',
-          message: 'Login failed'
-        })
+        notify.err('Login Failed')
       })
-
     },
+  },
+  mounted() {
   }
 }
 </script>
