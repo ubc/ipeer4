@@ -1,13 +1,16 @@
 <script>
 import notify from '@/plugin/notify'
 import { mapStores } from 'pinia'
-//import { useVersionStore } from '@/store/VersionStore'
+import { useErrorStore } from '@/store/ErrorStore'
+import ErrorBox from '@/component/ErrorBox.vue'
+
 
 export default {
   components: {
+    ErrorBox,
   },
   computed: {
-    //...mapStores(useVersionStore)
+    ...mapStores(useErrorStore)
   },
   data() {
     return {
@@ -42,6 +45,7 @@ export default {
   <q-page padding class='row justify-center'>
     <div class='column col-xs-12 col-sm-8 col-md-6 col-lg-4'>
       <h4 class='q-mt-none q-mb-sm'>Login</h4>
+      <ErrorBox />
       <q-form @submit="onSubmit" @reset="onReset"
               class='column q-col-gutter-md'>
         <q-input v-model="username" label="Username"

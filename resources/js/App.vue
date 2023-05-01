@@ -1,12 +1,15 @@
 <script>
 import { mapStores } from 'pinia'
 import { useVersionStore } from '@/store/VersionStore'
+import { useErrorStore } from '@/store/ErrorStore'
+
 
 export default {
   components: {
   },
   computed: {
-    ...mapStores(useVersionStore)
+    ...mapStores(useVersionStore),
+    ...mapStores(useErrorStore)
   },
   data() {
     return {
@@ -15,6 +18,10 @@ export default {
   },
   mounted() {
     this.versionStore.get()
+    this.$router.beforeEach((to, from) => {
+      // clear existing errors on route change
+      this.errorStore.clear()
+    })
   }
 }
 </script>

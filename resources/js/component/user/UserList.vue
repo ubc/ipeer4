@@ -1,12 +1,15 @@
 <script>
 import { mapStores } from 'pinia'
-//import { useVersionStore } from '@/store/VersionStore'
+import { useErrorStore } from '@/store/ErrorStore'
+import ErrorBox from '@/component/ErrorBox.vue'
+
 
 export default {
   components: {
+    ErrorBox,
   },
   computed: {
-    //...mapStores(useVersionStore)
+    ...mapStores(useErrorStore)
   },
   data() {
     return {
@@ -42,8 +45,7 @@ export default {
           this.pagination.descending = response.data.descending
         })
         .catch((err) => {
-          // TODO: real error message
-          console.log(err)
+          this.errorStore.handle(err)
         })
     },
     // qtable event handler for clicking on a user row
@@ -83,12 +85,15 @@ export default {
         @row-click='showUser'
     >
       <template v-slot:top-left>
-        <q-btn color="primary" icon='add' label="Add User" @click="addUser" 
-          to='/user/new' />
+        <div class='col'>
+          <ErrorBox class='q-mb-md' />
+          <q-btn color="primary" icon='add' label="Add User" @click="addUser" 
+            to='/user/new' />
+        </div>
       </template>
     </q-table>
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 </style>
