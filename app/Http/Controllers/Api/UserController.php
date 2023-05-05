@@ -67,7 +67,9 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        return User::find($id);
+        $user = User::find($id);
+        if ($user) return $user;
+        abort(Status::HTTP_NOT_FOUND, 'User not found');
     }
 
     /**
@@ -111,6 +113,11 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        return User::destroy($id);
+        $user = User::find($id);
+        if ($user) {
+            if ($user->delete()) return true;
+            abort(Status::HTTP_CONFLICT, 'User in the process of being deleted or already deleted');
+        }
+        abort(Status::HTTP_NOT_FOUND, 'User already deleted / does not exist');
     }
 }

@@ -17,7 +17,7 @@ export default {
         password: '',
         email: '',
       },
-      isPwd: true
+      showPassword: false,
     }
   },
   methods: {
@@ -50,25 +50,34 @@ export default {
       <div class='text-h6'>Add User</div>
       <q-form @submit="onSubmit" @reset="onReset"
               class='column q-col-gutter-md'>
-        <q-input v-model="user.username" label="Username"
-          :rules="[val => !!val || 'Username is required']" />
+        <q-input v-model="user.username" label="Username" bottom-slots
+                 :error="'username' in $error.fields"
+                 :error-message='$error.fields.username' />
 
-        <q-input v-model="user.password" label="Password"
-                 :rules="[val => !!val || 'Password is required']"
-                 :type="isPwd ? 'password' : 'text'"
-                 autocomplete='new-password'>
-          <template v-slot:append>
-            <q-icon
-              :name="isPwd ? 'visibility' : 'visibility_off'"
-              class="cursor-pointer"
-              @click="isPwd = !isPwd"
-            />
-          </template>
+        <q-input v-model="user.password" label="Password" class='col-grow'
+                 :type="showPassword ? 'text' : 'password'"
+                 autocomplete='new-password'
+                 :error="'password' in $error.fields"
+                 :error-message='$error.fields.password' >
+         <template v-slot:after>
+           <q-toggle
+               size='xl'
+               v-model="showPassword"
+               color='warning'
+               checked-icon='visibility'
+               unchecked-icon='visibility_off'
+               />
+         </template>
         </q-input>
 
-        <q-input v-model="user.name" label="Name" />
+        <q-input v-model="user.name" label="Name"
+                 :error="'name' in $error.fields"
+                 :error-message='$error.fields.name' />
 
-        <q-input v-model="user.email" type="email" label="Email" />
+        <q-input v-model="user.email" label="Email" bottom-slots
+                 :error="'email' in $error.fields"
+                 :error-message='$error.fields.email' />
+
         <ErrorBox />
 
         <div class='q-pt-lg row justify-between'>

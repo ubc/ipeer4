@@ -40,3 +40,15 @@ this.axios.post('/some/api', this.data).then((resp) => {
   this.$error.handle(err)
 })
 ```
+
+When a request fails field validation, ErrorStore will process the error return
+a map of failed fields to their error messages in the `fields` getter. This is
+meant to be fed into Quasar's q-input component's error properties to show the
+error to users. Note that `bottom-slots` property is supposed to be required to
+enable the error display.
+
+```html
+<q-input v-model="user.username" label="Username" bottom-slots
+         :error="'username' in $error.fields"
+         :error-message='$error.fields.username' />
+```
