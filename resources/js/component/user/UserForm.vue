@@ -23,17 +23,13 @@ export default {
   methods: {
     onSubmit() {
       this.axios.post('/user', this.user).then((resp) => {
-        this.$q.notify({
-          type: 'positive',
-          message: 'User created successfully!'
-        })
+        this.$error.clear() // clear previous errors if any
+        this.$notify.ok("User '"+ this.username +"' created!")
         this.$router.push('/admin')
       }).catch((err) => {
-        console.log(err)
-        this.$q.notify({
-          type: 'negative',
-          message: 'Failed to create user: ' + err.message
-        })
+        this.$error.clear()
+        this.$notify.err('Check user info for errors.')
+        this.$error.handle(err)
       })
     },
     onReset() {
@@ -42,6 +38,8 @@ export default {
       this.user.password = ''
       this.user.email = ''
     },
+  },
+  mounted() {
   }
 }
 </script>
@@ -71,6 +69,7 @@ export default {
         <q-input v-model="user.name" label="Name" />
 
         <q-input v-model="user.email" type="email" label="Email" />
+        <ErrorBox />
 
         <div class='q-pt-lg row justify-between'>
           <q-btn label="Add" type="submit" color="primary" />

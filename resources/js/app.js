@@ -12,6 +12,11 @@ import quasarIconSet from 'quasar/icon-set/svg-material-icons'
 import '@quasar/extras/material-icons/material-icons.css'
 import 'quasar/src/css/index.sass'
 
+// commonly used components/store/plugin that we want to be globally available
+import ErrorBox from '@/component/ErrorBox.vue'
+import notify from '@/plugin/notify'
+import { useErrorStore } from '@/store/ErrorStore'
+
 const pinia = createPinia()
 const app = createApp(App)
 
@@ -29,4 +34,10 @@ app.use(Quasar, {
   iconSet: quasarIconSet,
 })
 app.use(router)
+
+// add error system globally so we don't have to manually import them everywhere
+app.component('ErrorBox', ErrorBox)
+app.config.globalProperties.$notify = notify;
+app.config.globalProperties.$error = useErrorStore();
+
 app.mount('#app')

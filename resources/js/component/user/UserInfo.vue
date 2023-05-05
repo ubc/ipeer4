@@ -1,12 +1,12 @@
 <script>
 import { mapStores } from 'pinia'
-//import { useVersionStore } from '@/store/VersionStore'
+//import { useErrorStore } from '@/store/ErrorStore'
 
 export default {
   components: {
   },
   computed: {
-    //...mapStores(useVersionStore)
+//    ...mapStores(useErrorStore)
   },
   data() {
     return {
@@ -17,7 +17,6 @@ export default {
     getUser() {
       this.axios.get('user/' + this.$route.params.id)
         .then((response) => {
-          console.log(response.data)
           this.user = response.data
         })
         .catch((err) => {
@@ -37,6 +36,7 @@ export default {
     
     <q-card>
       <q-card-section>
+        <ErrorBox />
         <div class="text-h6">{{ user.username }}</div>
       </q-card-section>
 

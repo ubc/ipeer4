@@ -28,7 +28,7 @@ export default {
             <q-icon name="error" color='negative' />
           </q-item-section>
           <q-item-section>
-            <q-item-label text-color='negative' v-if='msg.title'>{{ msg.title }}</q-item-label>
+            <q-item-label v-if='msg.title'>{{ msg.title }}</q-item-label>
             <q-item-label caption v-if='msg.body'>{{ msg.body }}</q-item-label>
           </q-item-section>
         </q-item>
