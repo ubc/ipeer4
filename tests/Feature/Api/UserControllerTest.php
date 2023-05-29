@@ -258,6 +258,55 @@ class UserControllerTest extends TestCase
         );
     }
 
+    public function test_filter_users()
+    {
+        // create enough users to trigger the pagination, default per page
+        // limit in laravel is 15
+        $totalUsers = $this->perPage + 1;
+        $users = User::factory()->count($totalUsers)->create();
+        // login via Sanctum
+        Sanctum::actingAs($users[0], ['*']);
+        $filterTerm = 'lookForThisTerm';
+        // create some users with a specific term in their username or name or
+        // email, we'll test filtering for this term
+        $targetUsernameUser = User::factory()->create([
+            'username' => '32sd' . $filterTerm . 'dlsajld']);
+        $targetNameUser = User::factory()->create([
+            'name' => 'DLSKJDOSRUOSDI ' . $filterTerm]);
+        $targetEmailUser = User::factory()->create([
+            'email' => '32sd' . $filterTerm . '@example.com']);
+        $expectedUsers = [$targetUsernameUser, $targetNameUser,
+            $targetEmailUser];
+
+        // GET the first page of users
+        $resp = $this->getJson($this->url . '?filter=' . $filterTerm);
+        $resp->assertStatus(Status::HTTP_OK);
+        $resp->assertJson(fn (AssertableJson $json) =>
+            $json->where('total', 3)
+                 ->where('per_page', $this->perPage)
+                 ->has('data', 3, fn (AssertableJson $json) =>
+                 $json->where('id', $targetUsernameUser->id)
+                      ->where('username', $targetUsernameUser->username)
+                      ->where('name', $targetUsernameUser->name)
+                      ->where('email', $targetUsernameUser->email)
+                      ->missing('password')
+                      ->etc()
+                 )
+                 ->etc()
+        );
+
+        // check all expected users are there
+        foreach ($resp['data'] as $i => $actualUser) {
+            $expectedUser = $expectedUsers[$i];
+            $this->assertEquals($expectedUser['username'],
+                                $actualUser['username']);
+            $this->assertEquals($expectedUser['name'],
+                                $actualUser['name']);
+            $this->assertEquals($expectedUser['email'],
+                                $actualUser['email']);
+        }
+    }
+
     public function test_create_user()
     {
         // create a user so there's at least one in the database

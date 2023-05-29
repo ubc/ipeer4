@@ -28,6 +28,7 @@ class UserController extends Controller
             'sort_by' => Rule::in(['id', 'username', 'name', 'email',
                                    'created_at', 'updated_at']),
             'descending' => ['nullable', new BoolStr],
+            'filter' => 'string|nullable',
         ]);
         // set default values for empty params
         $perPage = $data['per_page'] ?? config('ipeer.paginate.perPage');
@@ -35,8 +36,18 @@ class UserController extends Controller
         $descending = toBoolean($data['descending'] ??
                                 config('ipeer.paginate.descending'));
         $sortDir = $descending ? 'desc' : 'asc';
+        $filter = $data['filter'] ?? '';
 
-        $users = User::orderBy($sortBy, $sortDir)->paginate($perPage);
+        $users = User::orderBy($sortBy, $sortDir);
+        if ($filter) {
+            $term = '%' . escapeLike($filter) . '%';
+            $users = $users->where(function ($query) use ($term) {
+                $query->where('name', 'LIKE', $term)
+                      ->orWhere('username', 'LIKE', $term)
+                      ->orWhere('email', 'LIKE', $term);
+            });
+        }
+        $users = $users->paginate($perPage);
         return array_merge($users->withQueryString()->toArray(), 
             // additional params for Quasar pagination
             ['sort_by' => $sortBy, 'descending' => $descending]);

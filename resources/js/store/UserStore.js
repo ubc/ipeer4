@@ -5,7 +5,7 @@ const urlBase = 'user'
 
 export const useUserStore = defineStore('user', {
   state: () => ({
-    users: [],
+    filter: '',
     pagination: {
       sortBy: 'id',
       descending: false,
@@ -13,6 +13,7 @@ export const useUserStore = defineStore('user', {
       rowsPerPage: 10,
       rowsNumber: 0, // total entries
     },
+    users: [],
   }),
 
   getters: {
@@ -20,13 +21,14 @@ export const useUserStore = defineStore('user', {
 
   actions: {
     async getPage() {
-      const pagingParams = new URLSearchParams({
+      const params = new URLSearchParams({
         page:       this.pagination.page,
         per_page:   this.pagination.rowsPerPage,
         sort_by:    this.pagination.sortBy,
         descending: this.pagination.descending,
+        filter:     this.filter,
       })
-      const url = urlBase + '?' + pagingParams.toString()
+      const url = urlBase + '?' + params.toString()
       try {
         const resp = await axios.get(url)
         this.users = resp.data.data
@@ -40,6 +42,9 @@ export const useUserStore = defineStore('user', {
       } catch (err) {
         throw err
       }
+    },
+    setFilter(filter) {
+      this.filter = filter
     },
     setPagination(pagination) {
       this.pagination.page        = pagination.page

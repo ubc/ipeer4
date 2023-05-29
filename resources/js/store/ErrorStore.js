@@ -49,7 +49,7 @@ export const useErrorStore = defineStore('error', {
       let msgs = []
       for (const error of state.errors) {
         if (error.response) { // server responded with error
-          msgs.concat(getServerError(error))
+          msgs = msgs.concat(getServerError(error))
         }
         else if (error.request) { // no response from server
           msgs.push({'title': 'Site is Not Responding'})

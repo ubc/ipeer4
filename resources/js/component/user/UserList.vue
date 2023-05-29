@@ -21,6 +21,7 @@ export default {
         {name: 'updated_at', field: 'updated_at', label: 'Updated',
          sortable: true},
       ],
+      filter: '',
       loading: false,
       pagination: {},
     }
@@ -28,7 +29,10 @@ export default {
   methods: {
     // qtable event handler for paging/sorting 
     async getUsers(props=null) {
-      if (props) this.userStore.setPagination(props.pagination)
+      if (props) {
+        this.userStore.setFilter(props.filter)
+        this.userStore.setPagination(props.pagination)
+      }
       this.loading = true
       this.$error.clear()
       try {
@@ -60,17 +64,29 @@ export default {
         :rows-per-page-options='[15,30,50,100]'
         :binary-state-sort='true'
         :loading='loading'
+        :filter='filter'
         row-key="id"
         v-model:pagination="userStore.pagination"
         @request='getUsers'
         @row-click='showUser'
     >
+
       <template v-slot:top-left>
         <div class='col'>
           <ErrorBox class='q-mb-md' />
           <q-btn color="primary" icon='add' label="Add User" to='/user/new' />
         </div>
       </template>
+
+      <template v-slot:top-right>
+        <q-input borderless dense debounce="1000" v-model="filter"
+          placeholder="Search">
+          <template v-slot:append>
+            <q-icon name="search" />
+          </template>
+        </q-input>
+      </template>
+
     </q-table>
   </div>
 </template>
