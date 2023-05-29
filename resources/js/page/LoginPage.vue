@@ -17,6 +17,7 @@ export default {
       username: '',
       password: '',
       isPwd: true,
+      isLoading: false,
     }
   },
   methods: {
@@ -25,14 +26,16 @@ export default {
       this.password = ''
     },
     onSubmit() {
+      this.isLoading = true
       this.axios.post('/login', {
         username: this.username,
         password: this.password,
       }).then((resp) => {
-        notify.ok('Login Successful')
         this.$router.push('/admin')
       }).catch((err) => {
         notify.err('Login Failed')
+      }).finally(() => {
+        this.isLoading = false
       })
     },
   },
@@ -65,8 +68,10 @@ export default {
         </q-input>
 
         <div class='q-pt-lg row justify-between'>
-          <q-btn label="Login" type="submit" color="primary" />
-          <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" />
+          <q-btn label="Login" type="submit" color="primary"
+            :loading='isLoading' />
+          <q-btn label="Reset" type="reset" color="primary" :disable='isLoading'
+            flat class="q-ml-sm" />
         </div>
       </q-form>
     </div>
