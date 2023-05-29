@@ -1,15 +1,13 @@
 <script>
 import { mapStores } from 'pinia'
-import { useErrorStore } from '@/store/ErrorStore'
-import ErrorBox from '@/component/ErrorBox.vue'
+import { useUserStore } from '@/store/UserStore'
 
 
 export default {
   components: {
-    ErrorBox,
   },
   computed: {
-    ...mapStores(useErrorStore)
+    ...mapStores(useUserStore)
   },
   data() {
     return {
@@ -23,50 +21,32 @@ export default {
         {name: 'updated_at', field: 'updated_at', label: 'Updated',
          sortable: true},
       ],
-      pagination: {
-        sortBy: 'id',
-        descending: false,
-        page: 1,
-        rowsPerPage: 10,
-        rowsNumber: 0, // total entries
-      },
-      users: {},
+      loading: false,
+      pagination: {},
     }
   },
   methods: {
-    getUsers(url='user') {
-      this.axios.get(url)
-        .then((response) => {
-          this.users = response.data
-          this.pagination.page = response.data.current_page
-          this.pagination.rowsPerPage = response.data.per_page
-          this.pagination.rowsNumber = response.data.total
-          this.pagination.sortBy = response.data.sort_by
-          this.pagination.descending = response.data.descending
-        })
-        .catch((err) => {
-          this.errorStore.handle(err)
-        })
+    // qtable event handler for paging/sorting 
+    async getUsers(props=null) {
+      if (props) this.userStore.setPagination(props.pagination)
+      this.loading = true
+      this.$error.clear()
+      try {
+        await this.userStore.getPage()
+      } catch(err) {
+        this.$error.handle(err)
+      }
+      this.loading = false
     },
     // qtable event handler for clicking on a user row
     showUser(ev, row, index) {
       this.$router.push({name: 'userInfo', params: { id: row.id}})
     },
-    // qtable event handler for paging/sorting 
-    updateUsers(props) {
-      const { page, rowsPerPage, sortBy, descending } = props.pagination
-      const params = new URLSearchParams({
-        page: page,
-        per_page: rowsPerPage,
-        sort_by: sortBy,
-        descending: descending,
-      });
-      const url = 'user?' + params.toString(); 
-      this.getUsers(url);
-    },
   },
   mounted() {
-    this.getUsers()
+  },
+  async created() {
+    await this.getUsers()
   }
 }
 </script>
@@ -75,20 +55,20 @@ export default {
   <div>
     <q-table
         title="Users"
-        :rows="users.data"
+        :rows="userStore.users"
         :columns="columns"
         :rows-per-page-options='[15,30,50,100]'
         :binary-state-sort='true'
+        :loading='loading'
         row-key="id"
-        v-model:pagination="pagination"
-        @request='updateUsers'
+        v-model:pagination="userStore.pagination"
+        @request='getUsers'
         @row-click='showUser'
     >
       <template v-slot:top-left>
         <div class='col'>
           <ErrorBox class='q-mb-md' />
-          <q-btn color="primary" icon='add' label="Add User" @click="addUser" 
-            to='/user/new' />
+          <q-btn color="primary" icon='add' label="Add User" to='/user/new' />
         </div>
       </template>
     </q-table>
