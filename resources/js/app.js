@@ -25,7 +25,7 @@ pinia.use(({store}) => {
   store.$router = markRaw(router)
 });
 
-app.config.globalProperties.axios = axios
+app.config.globalProperties.$axios = axios
 app.use(pinia)
 app.use(Quasar, {
   plugins: {
@@ -39,5 +39,9 @@ app.use(router)
 app.component('ErrorBox', ErrorBox)
 app.config.globalProperties.$notify = notify;
 app.config.globalProperties.$error = useErrorStore();
+// global vue error handler
+app.config.errorHandler = function(err, vm, info) {
+  app.config.globalProperties.$error.handle(err)
+}
 
 app.mount('#app')

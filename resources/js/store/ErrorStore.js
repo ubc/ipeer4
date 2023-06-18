@@ -1,72 +1,27 @@
-import { defineStore } from 'pinia'
+import { defineStore, acceptHMRUpdate } from 'pinia'
+
 import axios from '@/plugin/axios'
 import { NavigationFailureType, isNavigationFailure } from 'vue-router'
 
-// giant function to extract error messages from different http error codes
-function getServerError(error) {
-  let msgs = []
-  let resp = error.response
-  if (resp.status == 401) {
-    msgs.push({'title': 'You need to log in'})
-  }
-  else if (resp.status == 404) {
-    let msg = 'Requested resource not found' // default message
-    if ('message' in resp.data) msg = error.response.data.message
-    msgs.push({'title': msg})
-  }
-  else if (resp.status == 409) {
-    // rare, like if delete fails cause it's already being deleted
-    let msg = 'Conflict encountered when trying to modify resource'
-    if ('message' in resp.data) msg = error.response.data.message
-    msgs.push({'title': msg})
-  }
-  else if (resp.status == 422) {
-    // laravel field validation error
-    for (const [field, issues] of Object.entries(resp.data.errors)) {
-      for (const issue of issues) {
-        msgs.push({'title': issue})
-      }
-    }
-  }
-  else {
-    // general catchall 
-    let msg = 'Unknown Server Error'
-    if ('message' in resp.data) msg = error.response.data.message
-    msgs.push({'title': msg})
-  }
-  return msgs
-}
+// errors that occur within this timespan in miliseconds will be grouped
+// together in the latest error
+const ERROR_FRAME_TIMESPAN = 1000;
 
 export const useErrorStore = defineStore('error', {
   state: () => ({
+    errorFrameStart: 0, // timestamp of the current error frame
+    latest: [], // current error frame, most recent errors
+    old: [], // when new error come in, the previous error gets moved here
     errors: [],
   }),
 
   getters: {
-    // return a list of error messages, each error message is in the format:
-    // {'title': 'Error Title', 'body': 'Error Detail'}
-    msgs(state) {
-      let msgs = []
-      for (const error of state.errors) {
-        if (error.response) { // server responded with error
-          msgs = msgs.concat(getServerError(error))
-        }
-        else if (error.request) { // no response from server
-          msgs.push({'title': 'Site is Not Responding'})
-        }
-        else { // probably some issue with the code
-          msgs.push({
-            'title': 'Buggy Code: "' + error.name + ': ' + error.message + '"',
-            'body': error.stack
-          })
-        }
-      }
-      return msgs
-    },
     // returns a map of fields that failed validation to their error messages
     fields(state) {
       let fields = {}
-      for (const error of state.errors) {
+      // we only want to highlight the latest errors
+      for (const error of state.latest) {
+        if (!error.response) continue
         let resp = error.response
         if (resp.status == 422) {
           for (const [field, issues] of Object.entries(resp.data.errors)) {
@@ -83,21 +38,43 @@ export const useErrorStore = defineStore('error', {
   },
 
   actions: {
+    add(error) {
+      let errorFrameEnd = this.errorFrameStart + ERROR_FRAME_TIMESPAN
+      if (error.timestamp > errorFrameEnd) {
+        // error is newer than the current error frame, create a new frame
+        if (this.latest.length) this.old.unshift(this.latest)
+        this.errorFrameStart = error.timestamp
+        this.latest = [error]
+      }
+      else {
+        // error is in the current error frame, add to current frame
+        this.latest.push(error)
+      }
+    },
     handle(error) {
+      error.timestamp = Date.now()
+      console.error(error)
       if (error.response && error.response.status == 401) {
         // we don't want the 401 error to be cleared on route change (cause then
         // the error won't show up on login page), so
         // we'll store the error only after navigation is complete
         this.$router.push('/login').then((failure) => {
-          this.errors.push(error)
+          this.add(error)
         })
       }
       else {
-        this.errors.push(error)
+        this.add(error)
       }
     },
-    clear() {
-      this.errors = []
+    clearAll() {
+      this.errorFrameStart = 0
+      this.latest = []
+      this.old = []
     }
   },
 })
+
+// enable HMR for this store
+if (import.meta.hot) {
+  import.meta.hot.accept(acceptHMRUpdate(useErrorStore, import.meta.hot))
+}

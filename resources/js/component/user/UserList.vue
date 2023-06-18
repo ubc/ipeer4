@@ -34,7 +34,6 @@ export default {
         this.userStore.setPagination(props.pagination)
       }
       this.loading = true
-      this.$error.clear()
       try {
         await this.userStore.getPage()
       } catch(err) {

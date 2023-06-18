@@ -1,16 +1,8 @@
 <script>
-import notify from '@/plugin/notify'
-import { mapStores } from 'pinia'
-import { useErrorStore } from '@/store/ErrorStore'
-import ErrorBox from '@/component/ErrorBox.vue'
-
-
 export default {
   components: {
-    ErrorBox,
   },
   computed: {
-    ...mapStores(useErrorStore)
   },
   data() {
     return {
@@ -25,18 +17,17 @@ export default {
       this.username = ''
       this.password = ''
     },
-    onSubmit() {
+    async onSubmit() {
       this.isLoading = true
-      this.axios.post('/login', {
-        username: this.username,
-        password: this.password,
-      }).then((resp) => {
+      try {
+        await this.$axios.post('/login', {username: this.username,
+                                         password: this.password})
         this.$router.push('/admin')
-      }).catch((err) => {
-        notify.err('Login Failed')
-      }).finally(() => {
+      } catch (err) {
         this.isLoading = false
-      })
+        this.$notify.err('Check your username and password')
+        throw err
+      }
     },
   },
   mounted() {
@@ -48,7 +39,6 @@ export default {
   <q-page padding class='row justify-center'>
     <div class='column col-xs-12 col-sm-8 col-md-6 col-lg-4'>
       <h4 class='q-mt-none q-mb-sm'>Login</h4>
-      <ErrorBox />
       <q-form @submit="onSubmit" @reset="onReset"
               class='column q-col-gutter-md'>
         <q-input v-model="username" label="Username"
@@ -66,6 +56,8 @@ export default {
             />
           </template>
         </q-input>
+
+        <ErrorBox />
 
         <div class='q-pt-lg row justify-between'>
           <q-btn label="Login" type="submit" color="primary"

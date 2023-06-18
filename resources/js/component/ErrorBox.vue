@@ -1,18 +1,25 @@
 <script>
 import { mapStores } from 'pinia'
-import { useErrorStore } from '@/store/ErrorStore'
+import CodeErrorCard from '@/component/error/CodeErrorCard.vue'
+import NoResponseErrorCard from '@/component/error/NoResponseErrorCard.vue'
+import ServerErrorCard from '@/component/error/ServerErrorCard.vue'
 
 export default {
   components: {
+    CodeErrorCard,
+    NoResponseErrorCard,
+    ServerErrorCard,
   },
   computed: {
-    ...mapStores(useErrorStore)
   },
   data() {
     return {
     }
   },
   methods: {
+    clearAll() {
+      this.$error.clearAll()
+    }
   },
   mounted() {
   }
@@ -20,19 +27,31 @@ export default {
 </script>
 
 <template>
-  <div v-if='errorStore.msgs.length'>
+  <div v-if='$error.latest.length'>
     <q-banner class="errorBorder">
-      <q-list separator>
-        <q-item v-for='msg in errorStore.msgs'>
-          <q-item-section avatar>
-            <q-icon name="error" color='negative' />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label v-if='msg.title'>{{ msg.title }}</q-item-label>
-            <q-item-label caption v-if='msg.body'>{{ msg.body }}</q-item-label>
-          </q-item-section>
-        </q-item>
-      </q-list>
+      <template v-for='error in $error.latest'>
+        <ServerErrorCard v-if='error.response' :error='error' />
+        <NoResponseErrorCard v-else-if='error.request' :error='error' />
+        <CodeErrorCard v-else :error='error' />
+      </template>
+
+      <q-expansion-item v-if='$error.old.length'
+        label='Previous Errors' switch-toggle-side>
+        <q-card bordered>
+          <q-card-section v-for='errorGroup in $error.old'>
+            <template v-for='error in errorGroup'>
+              <ServerErrorCard v-if='error.response' :error='error' />
+              <NoResponseErrorCard v-else-if='error.request' :error='error' />
+              <CodeErrorCard v-else :error='error' />
+            </template>
+          </q-card-section>
+        </q-card>
+      </q-expansion-item>
+
+      <template v-slot:action>
+        <q-btn flat color="primary" icon='clear_all' label="Clear"
+               @click='clearAll()' />
+      </template>
     </q-banner>
   </div>
 </template>

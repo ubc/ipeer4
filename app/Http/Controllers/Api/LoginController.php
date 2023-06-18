@@ -30,6 +30,7 @@ class LoginController extends Controller
             return response('Login Successful', Status::HTTP_OK);
         }
  
-        return response('Login Failed', Status::HTTP_UNAUTHORIZED);
+        return response(['message'=>'Login Failed'],
+                         Status::HTTP_UNAUTHORIZED);
     }
 }

@@ -15,10 +15,12 @@ export default {
     }
   },
   mounted() {
+  },
+  created() {
     this.versionStore.get()
+    // clear existing errors on route change
     this.$router.beforeEach((to, from) => {
-      // clear existing errors on route change
-      this.$error.clear()
+      this.$error.clearAll()
     })
   }
 }
