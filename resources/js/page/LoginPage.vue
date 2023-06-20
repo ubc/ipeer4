@@ -1,6 +1,9 @@
 <script>
+import PasswordInput from '@/component/input/PasswordInput.vue'
+
 export default {
   components: {
+    PasswordInput,
   },
   computed: {
   },
@@ -8,7 +11,6 @@ export default {
     return {
       username: '',
       password: '',
-      isPwd: true,
       isLoading: false,
     }
   },
@@ -44,18 +46,10 @@ export default {
         <q-input v-model="username" label="Username"
           :rules="[val => !!val || 'Username is required']" />
 
-        <q-input v-model="password" label="Password"
-                 :rules="[val => !!val || 'Password is required']"
-                 :type="isPwd ? 'password' : 'text'"
-                 autocomplete='current-password'>
-          <template v-slot:append>
-            <q-icon
-              :name="isPwd ? 'visibility' : 'visibility_off' "
-              class="cursor-pointer"
-              @click="isPwd = !isPwd"
-            />
-          </template>
-        </q-input>
+        <PasswordInput v-model="password" label="Password"
+                       :is-new-password='false'
+                       :error="'password' in $error.fields"
+                       :error-message='$error.fields.password' />
 
         <ErrorBox />
 

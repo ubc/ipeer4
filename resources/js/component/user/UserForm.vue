@@ -1,45 +1,64 @@
 <script>
 import { mapStores } from 'pinia'
-//import { useVersionStore } from '@/store/VersionStore'
+import { useUserStore } from '@/store/UserStore'
+import PasswordInput from '@/component/input/PasswordInput.vue'
 
 export default {
   components: {
+    PasswordInput,
   },
   computed: {
-    //...mapStores(useVersionStore)
+    userId() { return this.$route.params.id },
+    isEdit() { if (this.userId) return true; return false },
+    actionVerb() { if (this.isEdit) return 'Edit'; return 'Add' },
+    ...mapStores(useUserStore)
   },
   data() {
     return {
       user: {
-        id: 0,
         username: '',
         name: '',
         password: '',
         email: '',
       },
       showPassword: false,
+      isLoading: false,
     }
   },
   methods: {
-    onSubmit() {
-      this.axios.post('/user', this.user).then((resp) => {
-        this.$error.clear() // clear previous errors if any
-        this.$notify.ok("User '"+ this.username +"' created!")
-        this.$router.push('/admin')
-      }).catch((err) => {
-        this.$error.clear()
-        this.$notify.err('Check user info for errors.')
-        this.$error.handle(err)
-      })
+    async onSubmit() {
+      this.isLoading = true
+      try {
+        if (this.isEdit) { // edit existing user
+          this.user = await this.userStore.editUser(this.user)
+          this.$notify.ok("User '"+ this.user.username +"' updated!")
+        }
+        else { // create new user
+          let resp = await this.userStore.newUser(this.user)
+          this.$notify.ok("User '"+ resp.username +"' created!")
+          this.$router.back()
+        }
+      } catch(err) {
+        this.isLoading = false
+        this.$notify.err('Check fields for issues.')
+        throw err
+      }
+      this.isLoading = false
     },
     onReset() {
       this.user.username = ''
       this.user.name = ''
       this.user.password = ''
       this.user.email = ''
+      this.$error.clearAll()
     },
   },
   mounted() {
+  },
+  async created() {
+    if (this.isEdit) {
+      this.user = await this.userStore.getUser(this.userId)
+    }
   }
 }
 </script>
@@ -47,28 +66,18 @@ export default {
 <template>
   <q-card>
     <q-card-section>
-      <div class='text-h6'>Add User</div>
+      {{ user.password }}
+      <div class='text-h6'>{{ actionVerb }} User</div>
       <q-form @submit="onSubmit" @reset="onReset"
               class='column q-col-gutter-md'>
         <q-input v-model="user.username" label="Username" bottom-slots
                  :error="'username' in $error.fields"
                  :error-message='$error.fields.username' />
 
-        <q-input v-model="user.password" label="Password" class='col-grow'
-                 :type="showPassword ? 'text' : 'password'"
-                 autocomplete='new-password'
+        <PasswordInput v-model="user.password" label="Password"
+                 :is-new-password='false'
                  :error="'password' in $error.fields"
-                 :error-message='$error.fields.password' >
-         <template v-slot:after>
-           <q-toggle
-               size='xl'
-               v-model="showPassword"
-               color='warning'
-               checked-icon='visibility'
-               unchecked-icon='visibility_off'
-               />
-         </template>
-        </q-input>
+                 :error-message='$error.fields.password' />
 
         <q-input v-model="user.name" label="Name"
                  :error="'name' in $error.fields"
@@ -80,9 +89,15 @@ export default {
 
         <ErrorBox />
 
-        <div class='q-pt-lg row justify-between'>
-          <q-btn label="Add" type="submit" color="primary" />
-          <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" />
+        <div class='row reverse-sm justify-between'>
+          <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm"
+                 :disable='isLoading' />
+          <div>
+            <q-btn label="Save" type="submit" color="primary q-mr-md"
+                   :loading='isLoading'/>
+            <q-btn color="secondary" icon='arrow_back' label="Back"
+                   @click="$router.back()" />
+          </div>
         </div>
       </q-form>
     </q-card-section>

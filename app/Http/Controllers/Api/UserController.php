@@ -111,8 +111,14 @@ class UserController extends Controller
             $user->email = $userInfo['email'];
         }
         // only let users change their own passwords
-        if ($request->user()->id == $id && !empty($userInfo['password'])) {
-            $user->password = $userInfo['password'];
+        if (!empty($userInfo['password'])) {
+            if ($request->user()->id == $id) {
+                $user->password = $userInfo['password'];
+            }
+            else {
+                abort(Status::HTTP_FORBIDDEN,
+                    'You cannot change password for this user');
+            }
         }
         $user->save();
         return $user;

@@ -25,6 +25,15 @@ export const useUserStore = defineStore('user', {
       const resp = await axios.get(url)
       return resp.data
     },
+    async newUser(userInfo) {
+      const resp = await axios.post(urlBase, userInfo)
+      return resp.data
+    },
+    async editUser(userInfo) {
+      const url = urlBase + '/' + userInfo.id
+      const resp = await axios.put(url, userInfo)
+      return resp.data
+    },
     async deleteUser(userId) {
       const url = urlBase + '/' + userId
       const resp = await axios.delete(url)

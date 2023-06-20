@@ -40,7 +40,6 @@ export default {
 
 <template>
   <div>
-    
     <q-card>
       <q-card-section>
         <ErrorBox />
@@ -81,7 +80,7 @@ export default {
       <q-card-section class='row reverse-sm justify-between'>
         <q-btn flat color="negative" label="Delete" @click="confirmDelete=true" />
         <div>
-          <q-btn color="primary" icon='edit' label="Edit" @click="editUser" 
+          <q-btn color="primary" icon='edit' label="Edit" @click="editUser"
             class='q-mr-md' />
           <q-btn color="secondary" icon='arrow_back' label="Back" @click="back" />
         </div>

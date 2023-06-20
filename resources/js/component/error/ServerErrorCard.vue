@@ -9,7 +9,12 @@ export default {
     title() {
       let resp = this.error.response
       if (resp.status == 401) {
-        let msg = 'You need to log in'
+        let msg = 'You need to log in' // default message
+        if ('message' in resp.data) msg = resp.data.message
+        return msg
+      }
+      else if (resp.status == 403) {
+        let msg = 'Permission denied' // default message
         if ('message' in resp.data) msg = resp.data.message
         return msg
       }
@@ -63,7 +68,7 @@ export default {
 
 <template>
   <ErrorCard :title='title' :timestamp='error.timestamp'>
-    <q-list v-if='fieldErrors' bordered separator>
+    <q-list v-if='fieldErrors.length' bordered separator>
       <q-item v-for='msg in fieldErrors'>
         <q-item-section avatar>
           <q-avatar text-color="negative" icon="error_outline" />
