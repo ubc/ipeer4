@@ -58,7 +58,7 @@ export default {
   <div>
     <q-table
         title="Users"
-        :rows="userStore.users"
+        :rows="userStore.page"
         :columns="columns"
         :rows-per-page-options='[15,30,50,100]'
         :binary-state-sort='true'

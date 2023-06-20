@@ -13,7 +13,7 @@ export const useUserStore = defineStore('user', {
       rowsPerPage: 10,
       rowsNumber: 0, // total entries
     },
-    users: [],
+    page: [],
   }),
 
   getters: {
@@ -40,19 +40,15 @@ export const useUserStore = defineStore('user', {
         filter:     this.filter,
       })
       const url = urlBase + '?' + params.toString()
-      try {
-        const resp = await axios.get(url)
-        this.users = resp.data.data
-        this.setPagination({
-          page:        resp.data.current_page,
-          rowsPerPage: resp.data.per_page,
-          sortBy:      resp.data.sort_by,
-          descending:  resp.data.descending,
-          rowsNumber:  resp.data.total
-        })
-      } catch (err) {
-        throw err
-      }
+      const resp = await axios.get(url)
+      this.page = resp.data.data
+      this.setPagination({
+        page:        resp.data.current_page,
+        rowsPerPage: resp.data.per_page,
+        sortBy:      resp.data.sort_by,
+        descending:  resp.data.descending,
+        rowsNumber:  resp.data.total
+      })
     },
     setFilter(filter) {
       this.filter = filter
