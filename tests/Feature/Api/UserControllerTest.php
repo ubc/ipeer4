@@ -158,7 +158,7 @@ class UserControllerTest extends TestCase
         // login via Sanctum
         Sanctum::actingAs($users[0], ['*']);
 
-        $sortableFields = ['username', 'name', 'email', 'created_at',
+        $sortableFields = ['id', 'username', 'name', 'email', 'created_at',
                            'updated_at'];
         foreach ($sortableFields as $sortableField) {
             //fwrite(STDERR, "\n--- $sortableField ---\n");
