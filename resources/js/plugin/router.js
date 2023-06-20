@@ -4,6 +4,7 @@ import LoginPage from '@/page/LoginPage.vue'
 import RegisterPage from '@/page/RegisterPage.vue'
 import AdminHomePage from '@/page/admin/AdminHomePage.vue'
 import UserRoute from '@/plugin/router/userRoute'
+import CourseRoute from '@/plugin/router/courseRoute'
 
 
 const routes = [
@@ -11,7 +12,8 @@ const routes = [
   { path: '/login', component: LoginPage },
   { path: '/register', component: RegisterPage },
   { path: '/admin', component: AdminHomePage },
-  UserRoute
+  CourseRoute,
+  UserRoute,
 ]
 
 const router = createRouter({

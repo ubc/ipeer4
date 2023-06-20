@@ -1,14 +1,15 @@
 <script>
 import { mapStores } from 'pinia'
-//import { useVersionStore } from '@/store/VersionStore'
+
+import CourseList from '@/component/course/CourseList.vue'
 import UserList from '@/component/user/UserList.vue'
 
 export default {
   components: {
+    CourseList,
     UserList
   },
   computed: {
-    //...mapStores(useVersionStore)
   },
   data() {
     return {
@@ -22,6 +23,8 @@ export default {
 <template>
   <q-page padding>
     Admin Home Page
+    <CourseList />
+    <q-separator spaced inset />
     <UserList />
   </q-page>
 </template>

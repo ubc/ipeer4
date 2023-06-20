@@ -1,22 +1,20 @@
 <script>
 import { mapStores } from 'pinia'
-import { useUserStore } from '@/store/UserStore'
-import PasswordInput from '@/component/input/PasswordInput.vue'
+import { useCourseStore } from '@/store/CourseStore'
 
 export default {
   components: {
-    PasswordInput,
   },
   computed: {
-    userId() { return this.$route.params.id },
-    isEdit() { if (this.userId) return true; return false },
+    courseId() { return this.$route.params.courseId },
+    isEdit() { if (this.courseId) return true; return false },
     actionVerb() { if (this.isEdit) return 'Edit'; return 'Add' },
-    ...mapStores(useUserStore)
+    ...mapStores(useCourseStore)
   },
   data() {
     return {
-      user: {
-        username: '',
+      course: {
+        coursename: '',
         name: '',
         password: '',
         email: '',
@@ -29,13 +27,13 @@ export default {
     async onSubmit() {
       this.isLoading = true
       try {
-        if (this.isEdit) { // edit existing user
-          this.user = await this.userStore.editUser(this.user)
-          this.$notify.ok("User '"+ this.user.username +"' updated!")
+        if (this.isEdit) { // edit existing course
+          this.course = await this.courseStore.edit(this.course)
+          this.$notify.ok("Course '"+ this.course.name +"' updated!")
         }
-        else { // create new user
-          let resp = await this.userStore.newUser(this.user)
-          this.$notify.ok("User '"+ resp.username +"' created!")
+        else { // create new course
+          let resp = await this.courseStore.create(this.course)
+          this.$notify.ok("Course '"+ resp.name +"' created!")
           this.$router.back()
         }
       } catch(err) {
@@ -46,10 +44,10 @@ export default {
       this.isLoading = false
     },
     onReset() {
-      this.user.username = ''
-      this.user.name = ''
-      this.user.password = ''
-      this.user.email = ''
+      this.course.coursename = ''
+      this.course.name = ''
+      this.course.password = ''
+      this.course.email = ''
       this.$error.clearAll()
     },
   },
@@ -57,7 +55,7 @@ export default {
   },
   async created() {
     if (this.isEdit) {
-      this.user = await this.userStore.getUser(this.userId)
+      this.course = await this.courseStore.get(this.courseId)
     }
   }
 }
@@ -66,25 +64,13 @@ export default {
 <template>
   <q-card>
     <q-card-section>
-      <div class='text-h6'>{{ actionVerb }} User</div>
+      <div class='text-h6'>{{ actionVerb }} Course</div>
       <q-form @submit="onSubmit" @reset="onReset"
               class='column q-col-gutter-md'>
-        <q-input v-model="user.username" label="Username" bottom-slots
-                 :error="'username' in $error.fields"
-                 :error-message='$error.fields.username' />
 
-        <PasswordInput v-model="user.password" label="Password"
-                 :is-new-password='false'
-                 :error="'password' in $error.fields"
-                 :error-message='$error.fields.password' />
-
-        <q-input v-model="user.name" label="Name"
+        <q-input v-model="course.name" label="Name"
                  :error="'name' in $error.fields"
                  :error-message='$error.fields.name' />
-
-        <q-input v-model="user.email" label="Email" bottom-slots
-                 :error="'email' in $error.fields"
-                 :error-message='$error.fields.email' />
 
         <ErrorBox />
 

@@ -1,21 +1,19 @@
 <script>
 import { mapStores } from 'pinia'
-import { useUserStore } from '@/store/UserStore'
+import { useCourseStore } from '@/store/CourseStore'
 
 
 export default {
   components: {
   },
   computed: {
-    ...mapStores(useUserStore)
+    ...mapStores(useCourseStore)
   },
   data() {
     return {
       columns: [
         {name: 'id', field: 'id', label: 'ID', sortable: true},
-        {name: 'username', field: 'username', label: 'Username',sortable: true},
-        {name: 'name', field: 'name', label: 'Name', sortable: true},
-        {name: 'email', field: 'email', label: 'Email', sortable: true},
+        {name: 'name', field: 'name', label: 'Name',sortable: true},
         {name: 'created_at', field: 'created_at', label: 'Created',
          sortable: true},
         {name: 'updated_at', field: 'updated_at', label: 'Updated',
@@ -28,24 +26,24 @@ export default {
   },
   methods: {
     // qtable event handler for paging/sorting 
-    async getUsers(props=null) {
+    async getCourses(props=null) {
       if (props) {
-        this.userStore.setFilter(props.filter)
-        this.userStore.setPagination(props.pagination)
+        this.courseStore.setFilter(props.filter)
+        this.courseStore.setPagination(props.pagination)
       }
       this.loading = true
-      await this.userStore.getPage()
+      await this.courseStore.getPage()
       this.loading = false
     },
-    // qtable event handler for clicking on a user row
-    showUser(ev, row, index) {
-      this.$router.push({name: 'userInfo', params: { id: row.id}})
+    // qtable event handler for clicking on a course row
+    showCourse(ev, row, index) {
+      this.$router.push({name: 'courseInfo', params: { courseId: row.id}})
     },
   },
   mounted() {
   },
   async created() {
-    await this.getUsers()
+    await this.getCourses()
   }
 }
 </script>
@@ -53,23 +51,23 @@ export default {
 <template>
   <div>
     <q-table
-        title="Users"
-        :rows="userStore.page"
+        title="Courses"
+        :rows="courseStore.page"
         :columns="columns"
         :rows-per-page-options='[15,30,50,100]'
         :binary-state-sort='true'
         :loading='loading'
         :filter='filter'
         row-key="id"
-        v-model:pagination="userStore.pagination"
-        @request='getUsers'
-        @row-click='showUser'
+        v-model:pagination="courseStore.pagination"
+        @request='getCourses'
+        @row-click='showCourse'
     >
 
       <template v-slot:top-left>
         <div class='col'>
           <ErrorBox class='q-mb-md' />
-          <q-btn color="primary" icon='add' label="Add User" to='/user/new' />
+          <q-btn color="primary" icon='add' label="Add Course" to='/course/new' />
         </div>
       </template>
 
