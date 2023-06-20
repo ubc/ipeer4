@@ -1,5 +1,5 @@
 import axios from '@/plugin/axios'
-import { defineStore } from 'pinia'
+import { defineStore, acceptHMRUpdate } from 'pinia'
 
 const urlBase = 'user'
 
@@ -20,6 +20,17 @@ export const useUserStore = defineStore('user', {
   },
 
   actions: {
+    async getUser(userId) {
+      const url = urlBase + '/' + userId
+      const resp = await axios.get(url)
+      return resp.data
+    },
+    async deleteUser(userId) {
+      const url = urlBase + '/' + userId
+      const resp = await axios.delete(url)
+      // remove deleted user from cached page
+      this.page = this.page.filter(user => user.id != userId)
+    },
     async getPage() {
       const params = new URLSearchParams({
         page:       this.pagination.page,
@@ -56,3 +67,8 @@ export const useUserStore = defineStore('user', {
     },
   },
 })
+
+// enable HMR for this store
+if (import.meta.hot) {
+  import.meta.hot.accept(acceptHMRUpdate(useUserStore, import.meta.hot))
+}

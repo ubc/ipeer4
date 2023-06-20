@@ -15,6 +15,11 @@ export default {
       path: 'new',
       name: 'userNew',
       component: UserForm
-    }
+    },
+    {
+      path: ':id/edit',
+      name: 'userEdit',
+      component: UserForm
+    },
   ]
 }

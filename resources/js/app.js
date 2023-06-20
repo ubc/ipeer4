@@ -11,6 +11,7 @@ import App from '@/App.vue'
 import quasarIconSet from 'quasar/icon-set/svg-material-icons'
 import '@quasar/extras/material-icons/material-icons.css'
 import 'quasar/src/css/index.sass'
+import 'quasar/src/css/flex-addon.sass' // breakpoint aware flex/space classes
 
 // commonly used components/store/plugin that we want to be globally available
 import ErrorBox from '@/component/ErrorBox.vue'

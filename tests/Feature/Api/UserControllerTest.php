@@ -408,7 +408,7 @@ class UserControllerTest extends TestCase
         $urlForUser = $this->url .'/'. $user2->id;
         // delete the user
         $resp = $this->deleteJson($urlForUser);
-        $resp->assertStatus(Status::HTTP_OK);
+        $resp->assertStatus(Status::HTTP_NO_CONTENT);
         $this->assertDatabaseMissing('users',
                                     ['id' => $user2->id]);
     }

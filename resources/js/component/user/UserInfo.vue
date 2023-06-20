@@ -1,32 +1,39 @@
 <script>
 import { mapStores } from 'pinia'
-//import { useErrorStore } from '@/store/ErrorStore'
+import { useUserStore } from '@/store/UserStore'
 
 export default {
   components: {
   },
   computed: {
-//    ...mapStores(useErrorStore)
+    ...mapStores(useUserStore)
   },
   data() {
     return {
-      user: {}
+      user: {},
+      userId: this.$route.params.id,
+      confirmDelete: false,
     }
   },
   methods: {
-    getUser() {
-      this.axios.get('user/' + this.$route.params.id)
-        .then((response) => {
-          this.user = response.data
-        })
-        .catch((err) => {
-          // TODO: real error message
-          console.log(err)
-        })
+    back() {
+      this.$router.back()
+    },
+    async getUser() {
+      this.user = await this.userStore.getUser(this.userId)
+    },
+    async deleteUser() {
+      await this.userStore.deleteUser(this.userId)
+      this.$notify.ok('User "' + this.user.username + '" deleted.')
+    },
+    editUser() {
+      this.$router.push({ name: 'userEdit', params: { id: this.userId } })
     }
   },
   mounted() {
-    this.getUser()
+  },
+  async created() {
+    await this.getUser()
   }
 }
 </script>
@@ -70,7 +77,29 @@ export default {
             </tr>
           </table>
       </q-card-section>
+
+      <q-card-section class='row reverse-sm justify-between'>
+        <q-btn flat color="negative" label="Delete" @click="confirmDelete=true" />
+        <div>
+          <q-btn color="primary" icon='edit' label="Edit" @click="editUser" 
+            class='q-mr-md' />
+          <q-btn color="secondary" icon='arrow_back' label="Back" @click="back" />
+        </div>
+      </q-card-section>
     </q-card>
+
+    <q-dialog v-model="confirmDelete">
+      <q-card>
+        <q-card-section class="row items-center">
+          <span class="text-negative">Delete user '{{ user.username }}'?</span>
+        </q-card-section>
+
+        <q-card-actions class='row justify-between'>
+          <q-btn label="Yes" icon='delete' color="negative" v-close-popup @click='deleteUser' />
+          <q-btn label="No" icon='cancel' color="secondary" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 

@@ -126,7 +126,7 @@ class UserController extends Controller
     {
         $user = User::find($id);
         if ($user) {
-            if ($user->delete()) return true;
+            if ($user->delete()) return response()->noContent(); // HTTP 204
             abort(Status::HTTP_CONFLICT, 'User in the process of being deleted or already deleted');
         }
         abort(Status::HTTP_NOT_FOUND, 'User already deleted / does not exist');
