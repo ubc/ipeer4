@@ -10,30 +10,19 @@ use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\Response as Status;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Api\AbstractApiController;
 use App\Http\Requests\Paginated\CoursePaginatedRequest;
 use App\Models\Course;
 
 
-class CourseController extends ApiResourceController
+class CourseController extends AbstractApiController
 {
     /**
      * Get a list of courses.
      */
     public function index(CoursePaginatedRequest $request)
     {
-        $data = $request->validated();
-
-        $courses = Course::orderBy($data['sort_by'], $data['sort_dir']);
-        if ($data['filter']) {
-            $term = '%' . escapeLike($data['filter']) . '%';
-            $users = $users->where(function ($query) use ($term) {
-                $query->where('name', 'LIKE', $term);
-            });
-        }
-        $courses = $courses->paginate($data['per_page']);
-        return array_merge($courses->withQueryString()->toArray(), 
-            // additional params for Quasar pagination
-            ['sort_by' => $data['sort_by'], 'descending' => $data['descending']]);
+        return $this->paginatedIndex($request, Course::query(), ['name']);
     }
 
     /**

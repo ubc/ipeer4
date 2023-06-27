@@ -12,32 +12,20 @@ use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\Response as Status;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Api\AbstractApiController;
 use App\Http\Requests\Paginated\UserPaginatedRequest;
 use App\Models\User;
  
 
-class UserController extends Controller
+class UserController extends AbstractApiController
 {
     /**
      * Get a list of users.
      */
     public function index(UserPaginatedRequest $request)
     {
-        $data = $request->validated();
-
-        $users = User::orderBy($data['sort_by'], $data['sort_dir']);
-        if ($data['filter']) {
-            $term = '%' . escapeLike($data['filter']) . '%';
-            $users = $users->where(function ($query) use ($term) {
-                $query->where('name', 'LIKE', $term)
-                      ->orWhere('username', 'LIKE', $term)
-                      ->orWhere('email', 'LIKE', $term);
-            });
-        }
-        $users = $users->paginate($data['per_page']);
-        return array_merge($users->withQueryString()->toArray(), 
-            // additional params for Quasar pagination
-            ['sort_by' => $data['sort_by'], 'descending' => $data['descending']]);
+        return $this->paginatedIndex($request, User::query(),
+            ['name', 'username', 'email']);
     }
 
     /**
