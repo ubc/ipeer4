@@ -12,8 +12,8 @@ use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\Response as Status;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Paginated\UserPaginatedRequest;
 use App\Models\User;
-use App\Rules\BoolStr;
  
 
 class UserController extends Controller
@@ -21,36 +21,23 @@ class UserController extends Controller
     /**
      * Get a list of users.
      */
-    public function index(Request $request)
+    public function index(UserPaginatedRequest $request)
     {
-        $data = $request->validate([
-            'per_page' => 'integer|nullable|max:100|min:1',
-            'sort_by' => Rule::in(['id', 'username', 'name', 'email',
-                                   'created_at', 'updated_at']),
-            'descending' => ['nullable', new BoolStr],
-            'filter' => 'string|nullable',
-        ]);
-        // set default values for empty params
-        $perPage = $data['per_page'] ?? config('ipeer.paginate.perPage');
-        $sortBy = $data['sort_by'] ?? config('ipeer.paginate.sortBy');
-        $descending = toBoolean($data['descending'] ??
-                                config('ipeer.paginate.descending'));
-        $sortDir = $descending ? 'desc' : 'asc';
-        $filter = $data['filter'] ?? '';
+        $data = $request->validated();
 
-        $users = User::orderBy($sortBy, $sortDir);
-        if ($filter) {
-            $term = '%' . escapeLike($filter) . '%';
+        $users = User::orderBy($data['sort_by'], $data['sort_dir']);
+        if ($data['filter']) {
+            $term = '%' . escapeLike($data['filter']) . '%';
             $users = $users->where(function ($query) use ($term) {
                 $query->where('name', 'LIKE', $term)
                       ->orWhere('username', 'LIKE', $term)
                       ->orWhere('email', 'LIKE', $term);
             });
         }
-        $users = $users->paginate($perPage);
+        $users = $users->paginate($data['per_page']);
         return array_merge($users->withQueryString()->toArray(), 
             // additional params for Quasar pagination
-            ['sort_by' => $sortBy, 'descending' => $descending]);
+            ['sort_by' => $data['sort_by'], 'descending' => $data['descending']]);
     }
 
     /**

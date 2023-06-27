@@ -10,8 +10,8 @@ use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\Response as Status;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Paginated\CoursePaginatedRequest;
 use App\Models\Course;
-use App\Rules\BoolStr;
 
 
 class CourseController extends ApiResourceController
@@ -19,33 +19,21 @@ class CourseController extends ApiResourceController
     /**
      * Get a list of courses.
      */
-    public function index(Request $request)
+    public function index(CoursePaginatedRequest $request)
     {
-        $data = $request->validate([
-            'per_page' => 'integer|nullable|max:100|min:1',
-            'sort_by' => Rule::in(['id', 'name', 'created_at', 'updated_at']),
-            'descending' => ['nullable', new BoolStr],
-            'filter' => 'string|nullable',
-        ]);
-        // set default values for empty params
-        $perPage = $data['per_page'] ?? config('ipeer.paginate.perPage');
-        $sortBy = $data['sort_by'] ?? config('ipeer.paginate.sortBy');
-        $descending = toBoolean($data['descending'] ??
-                                config('ipeer.paginate.descending'));
-        $sortDir = $descending ? 'desc' : 'asc';
-        $filter = $data['filter'] ?? '';
+        $data = $request->validated();
 
-        $courses = Course::orderBy($sortBy, $sortDir);
-        if ($filter) {
-            $term = '%' . escapeLike($filter) . '%';
-            $courses = $courses->where(function ($query) use ($term) {
+        $courses = Course::orderBy($data['sort_by'], $data['sort_dir']);
+        if ($data['filter']) {
+            $term = '%' . escapeLike($data['filter']) . '%';
+            $users = $users->where(function ($query) use ($term) {
                 $query->where('name', 'LIKE', $term);
             });
         }
-        $courses = $courses->paginate($perPage);
+        $courses = $courses->paginate($data['per_page']);
         return array_merge($courses->withQueryString()->toArray(), 
             // additional params for Quasar pagination
-            ['sort_by' => $sortBy, 'descending' => $descending]);
+            ['sort_by' => $data['sort_by'], 'descending' => $data['descending']]);
     }
 
     /**
