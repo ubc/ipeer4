@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
@@ -23,15 +24,15 @@ abstract class AbstractApiController extends Controller
      *
      * @param $request - The paginated request contains validated pagination
      * params.
-     * @param $baseQuery - For non-nested relational models, this can just be
-     * something like User::query(). But for relational models, we might need
-     * to use something like $courses->users().
+     * @param $baseQuery - For non-nested models, this can just be something
+     * like User::query(). But for nested models, we might need to use
+     * something like $courses->users().
      * @param $filter - List of fields that we'll look for the search term in.
      * E.g.: For users, we'll look in emails, name, username, etc.
      */
     protected function paginatedIndex(
         AbstractPaginatedRequest $request,
-        Builder $baseQuery,
+        Builder|Relation $baseQuery,
         array $filterFields
     ): array {
         $data = $request->validated();
