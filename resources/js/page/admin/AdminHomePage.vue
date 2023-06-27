@@ -22,9 +22,10 @@ export default {
 
 <template>
   <q-page padding>
-    Admin Home Page
+    <h4>Admin Home</h4>
+    <h5>Courses</h5>
     <CourseList />
-    <q-separator spaced inset />
+    <h5>Users</h5>
     <UserList />
   </q-page>
 </template>

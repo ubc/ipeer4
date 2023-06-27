@@ -27,10 +27,18 @@ class LoginController extends Controller
  
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return response('Login Successful', Status::HTTP_OK);
+            return response(['message' => 'Login Successful'], Status::HTTP_OK);
         }
  
         return response(['message'=>'Login Failed'],
                          Status::HTTP_UNAUTHORIZED);
+    }
+
+    public function logout(Request $request): Response
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return response(['message' => 'Logout Successful'], Status::HTTP_OK);
     }
 }

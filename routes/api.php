@@ -24,6 +24,7 @@ Route::namespace('App\Http\Controllers\Api')->group(function() {
     Route::get('/version', 'GuestActionsController@getVersion');
     Route::post('/register', 'GuestActionsController@registerUser');
     Route::post('/login', 'LoginController@authenticate');
+    Route::post('/logout', 'LoginController@logout');
     // login required routes
     Route::middleware('auth:sanctum')->group(function() {
         Route::apiResource('user', UserController::class);

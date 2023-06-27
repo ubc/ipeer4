@@ -9,7 +9,7 @@ import CourseRoute from '@/plugin/router/courseRoute'
 
 const routes = [
   { path: '/', component: HomePage },
-  { path: '/login', component: LoginPage },
+  { path: '/login', name: 'login', component: LoginPage },
   { path: '/register', component: RegisterPage },
   { path: '/admin', component: AdminHomePage },
   CourseRoute,

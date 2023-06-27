@@ -14,6 +14,13 @@ export default {
       count: 0
     }
   },
+  methods: {
+    async logout() {
+      await this.$axios.post('logout', [])
+      this.$notify.ok('You are logged out')
+      this.$router.push({ name: 'login' })
+    }
+  },
   mounted() {
   },
   created() {
@@ -39,6 +46,30 @@ export default {
             </div>
           </q-btn>
         </q-toolbar-title>
+
+        <q-space />
+
+        <q-btn-dropdown stretch flat label="Dropdown">
+          <q-list>
+            <q-item clickable v-ripple>
+              <q-item-section avatar>
+                <q-avatar icon="person" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>Profile</q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-separator inset spaced />
+            <q-item clickable v-ripple @click='logout()'>
+              <q-item-section avatar>
+                <q-avatar icon="logout" text-color="negative" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>Log Out</q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </q-btn-dropdown>
       </q-toolbar>
 
       <q-tabs align="left">
