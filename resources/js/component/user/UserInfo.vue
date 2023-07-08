@@ -20,10 +20,10 @@ export default {
       this.$router.back()
     },
     async getUser() {
-      this.user = await this.userStore.getUser(this.userId)
+      this.user = await this.userStore.get(this.userId)
     },
     async deleteUser() {
-      await this.userStore.deleteUser(this.userId)
+      await this.userStore.remove(this.userId)
       this.$notify.ok('User "' + this.user.username + '" deleted.')
     },
     editUser() {

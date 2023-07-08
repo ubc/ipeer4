@@ -7,7 +7,7 @@ export default {
   component: CoursePage,
   children: [
     {
-      path: ':courseId',
+      path: ':courseId/info',
       name: 'courseInfo',
       component: CourseInfo
     },

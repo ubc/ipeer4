@@ -1,77 +1,40 @@
 import axios from '@/plugin/axios'
 import { defineStore, acceptHMRUpdate } from 'pinia'
+import storeBase from '@/store/AbstractPaginatedStore'
 
 const urlBase = 'user'
 
-export const useUserStore = defineStore('user', {
-  state: () => ({
-    filter: '',
-    pagination: {
-      sortBy: 'id',
-      descending: false,
-      page: 1,
-      rowsPerPage: 10,
-      rowsNumber: 0, // total entries
-    },
-    page: [],
-  }),
-
-  getters: {
-  },
-
+const userStoreExt = {
+  state: {},
+  getters: {},
   actions: {
-    async getUser(userId) {
+    async getPage() {
+      return await this.index(urlBase)
+    },
+    async get(userId) {
       const url = urlBase + '/' + userId
       const resp = await axios.get(url)
       return resp.data
     },
-    async newUser(userInfo) {
+    async create(userInfo) {
       const resp = await axios.post(urlBase, userInfo)
       return resp.data
     },
-    async editUser(userInfo) {
+    async edit(userInfo) {
       const url = urlBase + '/' + userInfo.id
       const resp = await axios.put(url, userInfo)
       return resp.data
     },
-    async deleteUser(userId) {
+    async remove(userId) {
       const url = urlBase + '/' + userId
       const resp = await axios.delete(url)
       // remove deleted user from cached page
       this.page = this.page.filter(user => user.id != userId)
     },
-    async getPage() {
-      const params = new URLSearchParams({
-        page:       this.pagination.page,
-        per_page:   this.pagination.rowsPerPage,
-        sort_by:    this.pagination.sortBy,
-        descending: this.pagination.descending,
-        filter:     this.filter,
-      })
-      const url = urlBase + '?' + params.toString()
-      const resp = await axios.get(url)
-      this.page = resp.data.data
-      this.setPagination({
-        page:        resp.data.current_page,
-        rowsPerPage: resp.data.per_page,
-        sortBy:      resp.data.sort_by,
-        descending:  resp.data.descending,
-        rowsNumber:  resp.data.total
-      })
-    },
-    setFilter(filter) {
-      this.filter = filter
-    },
-    setPagination(pagination) {
-      this.pagination.page        = pagination.page
-      this.pagination.rowsPerPage = pagination.rowsPerPage
-      this.pagination.sortBy      = pagination.sortBy
-      this.pagination.descending  = pagination.descending
-      if (pagination.rowsNumber)
-        this.pagination.rowsNumber = pagination.rowsNumber
-    },
-  },
-})
+  }
+}
+
+export const useUserStore = defineStore('user', storeBase(userStoreExt))
 
 // enable HMR for this store
 if (import.meta.hot) {

@@ -1,25 +1,20 @@
 import axios from '@/plugin/axios'
 import { defineStore, acceptHMRUpdate } from 'pinia'
+import storeBase from '@/store/AbstractPaginatedStore'
 
 const urlBase = 'course'
 
-export const useCourseStore = defineStore('course', {
-  state: () => ({
-    filter: '',
-    pagination: {
-      sortBy: 'id',
-      descending: false,
-      page: 1,
-      rowsPerPage: 10,
-      rowsNumber: 0, // total entries
-    },
-    page: [],
-  }),
+const courseStoreExt = {
+  state: {
+  },
 
   getters: {
   },
 
   actions: {
+    async getPage() {
+      return await this.index(urlBase)
+    },
     async get(courseId) {
       const url = urlBase + '/' + courseId
       const resp = await axios.get(url)
@@ -40,38 +35,10 @@ export const useCourseStore = defineStore('course', {
       // remove deleted course from cached page
       this.page = this.page.filter(course => course.id != courseId)
     },
-    async getPage() {
-      const params = new URLSearchParams({
-        page:       this.pagination.page,
-        per_page:   this.pagination.rowsPerPage,
-        sort_by:    this.pagination.sortBy,
-        descending: this.pagination.descending,
-        filter:     this.filter,
-      })
-      const url = urlBase + '?' + params.toString()
-      const resp = await axios.get(url)
-      this.page = resp.data.data
-      this.setPagination({
-        page:        resp.data.current_page,
-        rowsPerPage: resp.data.per_page,
-        sortBy:      resp.data.sort_by,
-        descending:  resp.data.descending,
-        rowsNumber:  resp.data.total
-      })
-    },
-    setFilter(filter) {
-      this.filter = filter
-    },
-    setPagination(pagination) {
-      this.pagination.page        = pagination.page
-      this.pagination.rowsPerPage = pagination.rowsPerPage
-      this.pagination.sortBy      = pagination.sortBy
-      this.pagination.descending  = pagination.descending
-      if (pagination.rowsNumber)
-        this.pagination.rowsNumber = pagination.rowsNumber
-    },
-  },
-})
+  }
+}
+
+export const useCourseStore = defineStore('course', storeBase(courseStoreExt))
 
 // enable HMR for this store
 if (import.meta.hot) {

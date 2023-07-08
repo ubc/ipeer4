@@ -30,11 +30,11 @@ export default {
       this.isLoading = true
       try {
         if (this.isEdit) { // edit existing user
-          this.user = await this.userStore.editUser(this.user)
+          this.user = await this.userStore.edit(this.user)
           this.$notify.ok("User '"+ this.user.username +"' updated!")
         }
         else { // create new user
-          let resp = await this.userStore.newUser(this.user)
+          let resp = await this.userStore.create(this.user)
           this.$notify.ok("User '"+ resp.username +"' created!")
           this.$router.back()
         }
@@ -57,7 +57,7 @@ export default {
   },
   async created() {
     if (this.isEdit) {
-      this.user = await this.userStore.getUser(this.userId)
+      this.user = await this.userStore.get(this.userId)
     }
   }
 }
