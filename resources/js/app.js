@@ -4,7 +4,7 @@ import { createApp, markRaw } from 'vue'
 import { createPinia } from 'pinia'
 import { Quasar, Notify } from 'quasar'
 import axios from '@/plugin/axios'
-import router from '@/plugin/router'
+import router from '@/router/router'
 import App from '@/App.vue'
 
 // quasar icons & css

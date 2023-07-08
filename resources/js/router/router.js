@@ -3,8 +3,8 @@ import HomePage from '@/page/HomePage.vue'
 import LoginPage from '@/page/LoginPage.vue'
 import RegisterPage from '@/page/RegisterPage.vue'
 import AdminHomePage from '@/page/admin/AdminHomePage.vue'
-import UserRoute from '@/plugin/router/userRoute'
-import CourseRoute from '@/plugin/router/courseRoute'
+import UserRoute from '@/router/userRoute'
+import CourseRoute from '@/router/courseRoute'
 
 
 const routes = [
