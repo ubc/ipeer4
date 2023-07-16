@@ -47,6 +47,15 @@ export default function(extension) {
           rowsNumber:  resp.data.total
         })
       },
+      resetPagination() {
+        this.page                   = []
+        this.filter                 = ''
+        this.pagination.sortBy      = 'id'
+        this.pagination.descending  = false
+        this.pagination.page        = 1
+        this.pagination.rowsPerPage = 10
+        this.pagination.rowsNumber  = 0
+      },
       setFilter(filter) {
         this.filter = filter
       },

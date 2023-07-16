@@ -1,6 +1,7 @@
 import CoursePage from '@/page/course/CoursePage.vue'
 import CourseInfo from '@/component/course/CourseInfo.vue'
 import CourseForm from '@/component/course/CourseForm.vue'
+import CourseUserForm from '@/component/course/CourseUserForm.vue'
 
 export default {
   path: '/course',
@@ -20,6 +21,11 @@ export default {
       path: ':courseId/edit',
       name: 'courseEdit',
       component: CourseForm
+    },
+    {
+      path: ':courseId/user/new',
+      name: 'courseUserNew',
+      component: CourseUserForm
     },
   ]
 }

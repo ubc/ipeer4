@@ -1,9 +1,11 @@
 <script>
 import { mapStores } from 'pinia'
 import { useCourseStore } from '@/store/CourseStore'
+import CourseUserList from '@/component/course/CourseUserList.vue'
 
 export default {
   components: {
+    CourseUserList
   },
   computed: {
     ...mapStores(useCourseStore)
@@ -68,6 +70,11 @@ export default {
               <td class='text-body1 q-pl-md'>{{ course.created_at }}</td>
             </tr>
           </table>
+      </q-card-section>
+
+      <q-card-section>
+        <div class="text-h6">Enrolment</div>
+        <CourseUserList />
       </q-card-section>
 
       <q-card-section class='row reverse-sm justify-between'>
