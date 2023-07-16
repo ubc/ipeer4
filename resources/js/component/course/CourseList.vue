@@ -19,9 +19,7 @@ export default {
         {name: 'updated_at', field: 'updated_at', label: 'Updated',
          sortable: true},
       ],
-      filter: '',
       loading: false,
-      pagination: {},
     }
   },
   methods: {
@@ -57,7 +55,7 @@ export default {
         :rows-per-page-options='[15,30,50,100]'
         :binary-state-sort='true'
         :loading='loading'
-        :filter='filter'
+        :filter='courseStore.filter'
         row-key="id"
         v-model:pagination="courseStore.pagination"
         @request='getCourses'
@@ -72,7 +70,7 @@ export default {
       </template>
 
       <template v-slot:top-right>
-        <q-input borderless dense debounce="1000" v-model="filter"
+        <q-input borderless dense debounce="1000" v-model="courseStore.filter"
           placeholder="Search">
           <template v-slot:append>
             <q-icon name="search" />

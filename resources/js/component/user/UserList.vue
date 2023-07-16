@@ -21,9 +21,7 @@ export default {
         {name: 'updated_at', field: 'updated_at', label: 'Updated',
          sortable: true},
       ],
-      filter: '',
       loading: false,
-      pagination: {},
     }
   },
   methods: {
@@ -59,11 +57,13 @@ export default {
         :rows-per-page-options='[15,30,50,100]'
         :binary-state-sort='true'
         :loading='loading'
-        :filter='filter'
+        :filter='userStore.filter'
         row-key="id"
         v-model:pagination="userStore.pagination"
         @request='getUsers'
         @row-click='showUser'
+        no-data-label='No users yet'
+        no-results-label='No matching users found'
     >
 
       <template v-slot:top-left>
@@ -74,7 +74,7 @@ export default {
       </template>
 
       <template v-slot:top-right>
-        <q-input borderless dense debounce="1000" v-model="filter"
+        <q-input borderless dense debounce="1000" v-model="userStore.filter"
           placeholder="Search">
           <template v-slot:append>
             <q-icon name="search" />

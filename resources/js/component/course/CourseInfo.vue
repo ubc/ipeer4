@@ -44,7 +44,7 @@ export default {
     <q-card>
       <q-card-section>
         <ErrorBox />
-        <div class="text-h6">{{ course.coursename }}</div>
+        <div class="text-h6">{{ course.name }}</div>
       </q-card-section>
 
       <q-separator />
