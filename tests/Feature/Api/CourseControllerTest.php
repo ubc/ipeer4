@@ -16,12 +16,11 @@ use Laravel\Sanctum\Sanctum;
 use App\Models\Course;
 use App\Models\User;
 
-use Tests\TestCase;
+use Tests\Feature\Api\AbstractApiTestCase;
 
-class CourseControllerTest extends TestCase
+
+class CourseControllerTest extends AbstractApiTestCase
 {
-    use RefreshDatabase;
-
     private string $url = '/api/course';
     private int $perPage = 15;
 
@@ -29,6 +28,7 @@ class CourseControllerTest extends TestCase
     {
         // create a user and login as that user
         $user = User::factory()->create();
+        $user->assignRole('admin');
         Sanctum::actingAs($user, ['*']);
     }
 

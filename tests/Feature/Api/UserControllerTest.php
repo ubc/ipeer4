@@ -13,14 +13,14 @@ use Symfony\Component\HttpFoundation\Response as Status;
 
 use Laravel\Sanctum\Sanctum;
 
+use App\Models\Role;
 use App\Models\User;
 
-use Tests\TestCase;
+use Tests\Feature\Api\AbstractApiTestCase;
 
-class UserControllerTest extends TestCase
+
+class UserControllerTest extends AbstractApiTestCase
 {
-    use RefreshDatabase;
-
     private string $url = '/api/user';
     private int $perPage = 15;
 
@@ -28,6 +28,7 @@ class UserControllerTest extends TestCase
     {
         // create a user so there's at least one in the database
         $user = User::factory()->create();
+        $user->assignRole('admin');
         $urlForUser = $this->url .'/'. $user->id;
         // GET all
         $resp = $this->getJson($this->url);
@@ -55,6 +56,7 @@ class UserControllerTest extends TestCase
     {
         // create a user so there's at least one in the database
         $user = User::factory()->create();
+        $user->assignRole('admin');
         // login via Sanctum
         Sanctum::actingAs($user, ['*']);
 
@@ -104,6 +106,7 @@ class UserControllerTest extends TestCase
         // limit in laravel is 15
         $totalUsers = $this->perPage + 1;
         $users = User::factory()->count($totalUsers)->create();
+        $users[0]->assignRole('admin');
         // login via Sanctum
         Sanctum::actingAs($users[0], ['*']);
 
@@ -155,6 +158,7 @@ class UserControllerTest extends TestCase
         // limit in laravel is 15
         $totalUsers = $this->perPage + 1;
         $users = User::factory()->count($totalUsers)->create();
+        $users[0]->assignRole('admin');
         // login via Sanctum
         Sanctum::actingAs($users[0], ['*']);
 
@@ -213,6 +217,7 @@ class UserControllerTest extends TestCase
         // limit in laravel is 15
         $totalUsers = $this->perPage + 1;
         $users = User::factory()->count($totalUsers)->create();
+        $users[0]->assignRole('admin');
         // login via Sanctum
         Sanctum::actingAs($users[0], ['*']);
 
@@ -264,6 +269,7 @@ class UserControllerTest extends TestCase
         // limit in laravel is 15
         $totalUsers = $this->perPage + 1;
         $users = User::factory()->count($totalUsers)->create();
+        $users[0]->assignRole('admin');
         // login via Sanctum
         Sanctum::actingAs($users[0], ['*']);
         $filterTerm = 'lookForThisTerm';
@@ -311,6 +317,7 @@ class UserControllerTest extends TestCase
     {
         // create a user so there's at least one in the database
         $user = User::factory()->create();
+        $user->assignRole('admin');
         // login via Sanctum
         Sanctum::actingAs($user, ['*']);
         // this user is just generated and NOT stored in the database
@@ -350,6 +357,7 @@ class UserControllerTest extends TestCase
     {
         // create a user so there's at least one in the database
         $user = User::factory()->create();
+        $user->assignRole('admin');
         $urlForUser = $this->url .'/'. $user->id;
         // login via Sanctum
         Sanctum::actingAs($user, ['*']);
@@ -401,6 +409,7 @@ class UserControllerTest extends TestCase
     {
         // create a user so there's at least one in the database
         $user = User::factory()->create();
+        $user->assignRole('admin');
         // login via Sanctum
         Sanctum::actingAs($user, ['*']);
         // create a user to delete

@@ -19,18 +19,18 @@ use App\Models\User;
 
 use Database\Seeders\PermissionTestSeeder;
 
-use Tests\TestCase;
+use Tests\Feature\Api\AbstractApiTestCase;
 
-class PermissionTest extends TestCase
+/**
+ * A basic test that policies are being executed and roles are being enforced.
+ */
+class PermissionTest extends AbstractApiTestCase
 {
-    use RefreshDatabase;
-
     private int $perPage = 15;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->seed();
         $this->seed(PermissionTestSeeder::class);
     }
 

@@ -90,7 +90,7 @@ class UserController extends AbstractApiController
         }
         // only let users change their own passwords
         if (!empty($userInfo['password'])) {
-            if ($request->user()->id == $id) {
+            if ($request->user()->id == $user->id) {
                 $user->password = $userInfo['password'];
             }
             else {
