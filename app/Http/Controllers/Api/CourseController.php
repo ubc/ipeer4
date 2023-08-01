@@ -17,22 +17,31 @@ use App\Models\Course;
 
 class CourseController extends AbstractApiController
 {
+    public function __construct()
+    {
+        // tell Laravel to use UserPolicy to protect access to these methods
+        $this->authorizeResource(Course::class, 'course');
+    }
+
     /**
      * Get a list of courses.
      */
     public function index(CoursePaginatedRequest $request)
     {
-        return $this->paginatedIndex($request, Course::query(), ['name']);
+        $user = auth()->user();
+        if ($user->can('user.admin'))
+            return $this->paginatedIndex($request, Course::query(), ['name']);
+        // regular users can only get their enroled courses
+        return $this->paginatedIndex($request, $user->courses(), ['name']);
+
     }
 
     /**
      * Get the specified course.
      */
-    public function show(string $id)
+    public function show(Course $course)
     {
-        $course = Course::find($id);
-        if ($course) return $course;
-        abort(Status::HTTP_NOT_FOUND, 'Course not found');
+        return $course;
     }
 
     /**
@@ -52,9 +61,8 @@ class CourseController extends AbstractApiController
     /**
      * Update the specified course.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Course $course)
     {
-        $course = Course::find($id);
         $courseInfo = $request->validate([
             'name' => ['nullable', 'string'],
         ]);

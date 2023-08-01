@@ -19,6 +19,12 @@ use App\Models\User;
 
 class UserController extends AbstractApiController
 {
+    public function __construct()
+    {
+        // tell Laravel to use UserPolicy to protect access to these methods
+        $this->authorizeResource(User::class, 'user');
+    }
+
     /**
      * Get a list of users.
      */
@@ -51,19 +57,16 @@ class UserController extends AbstractApiController
     /**
      * Get the specified user.
      */
-    public function show(string $id)
+    public function show(User $user)
     {
-        $user = User::find($id);
-        if ($user) return $user;
-        abort(Status::HTTP_NOT_FOUND, 'User not found');
+        return $user;
     }
 
     /**
      * Update the specified user.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, User $user)
     {
-        $user = User::find($id);
         $userInfo = $request->validate([
             'username' => ['nullable', 'string',
                 Rule::unique('users')->ignore($user)],
@@ -103,13 +106,9 @@ class UserController extends AbstractApiController
     /**
      * Delete specified user.
      */
-    public function destroy(string $id)
+    public function destroy(User $user)
     {
-        $user = User::find($id);
-        if ($user) {
-            if ($user->delete()) return response()->noContent(); // HTTP 204
-            abort(Status::HTTP_CONFLICT, 'User in the process of being deleted or already deleted');
-        }
-        abort(Status::HTTP_NOT_FOUND, 'User already deleted / does not exist');
+        if ($user->delete()) return response()->noContent(); // HTTP 204
+        abort(Status::HTTP_CONFLICT, 'User in the process of being deleted or already deleted');
     }
 }
