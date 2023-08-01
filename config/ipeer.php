@@ -11,4 +11,8 @@ return [
         'sortBy' => 'id',
         'descending' => false,
     ],
+    'defaultAdminUser' => [
+        'username' => env('ADMIN_USERNAME', 'admin'),
+        'password' => env('ADMIN_PASSWORD', ''),
+    ],
 ];

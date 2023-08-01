@@ -26,9 +26,8 @@ class UserControllerTest extends AbstractApiTestCase
 
     public function test_deny_access_to_guest_users(): void
     {
-        // create a user so there's at least one in the database
-        $user = User::factory()->create();
-        $user->assignRole('admin');
+        // first user is the seeded admin
+        $user = User::first();
         $urlForUser = $this->url .'/'. $user->id;
         // GET all
         $resp = $this->getJson($this->url);
@@ -54,9 +53,8 @@ class UserControllerTest extends AbstractApiTestCase
 
     public function test_get_users()
     {
-        // create a user so there's at least one in the database
-        $user = User::factory()->create();
-        $user->assignRole('admin');
+        // first user is the seeded admin
+        $user = User::first();
         // login via Sanctum
         Sanctum::actingAs($user, ['*']);
 
@@ -103,12 +101,13 @@ class UserControllerTest extends AbstractApiTestCase
     public function test_get_users_paginated()
     {
         // create enough users to trigger the pagination, default per page
-        // limit in laravel is 15
+        // limit in laravel is 15, keep in mind we already have an admin user
         $totalUsers = $this->perPage + 1;
-        $users = User::factory()->count($totalUsers)->create();
-        $users[0]->assignRole('admin');
+        $admin = User::first();
+        $users = User::factory()->count($this->perPage)->create();
+        $users->prepend($admin);
         // login via Sanctum
-        Sanctum::actingAs($users[0], ['*']);
+        Sanctum::actingAs($admin, ['*']);
 
         // GET the first page of users
         $resp = $this->getJson($this->url);
@@ -137,10 +136,10 @@ class UserControllerTest extends AbstractApiTestCase
             $json->where('total', $totalUsers)
                  ->where('per_page', $this->perPage)
                  ->has('data', 1, fn (AssertableJson $json) =>
-                 $json->where('id', $users[$totalUsers-1]->id)
-                      ->where('username', $users[$totalUsers-1]->username)
-                      ->where('name', $users[$totalUsers-1]->name)
-                      ->where('email', $users[$totalUsers-1]->email)
+                 $json->where('id', $users->last()->id)
+                      ->where('username', $users->last()->username)
+                      ->where('name', $users->last()->name)
+                      ->where('email', $users->last()->email)
                       ->missing('password')
                       ->etc()
                  )
@@ -157,10 +156,11 @@ class UserControllerTest extends AbstractApiTestCase
         // create enough users to trigger the pagination, default per page
         // limit in laravel is 15
         $totalUsers = $this->perPage + 1;
-        $users = User::factory()->count($totalUsers)->create();
-        $users[0]->assignRole('admin');
+        $admin = User::first();
+        $users = User::factory()->count($this->perPage)->create();
+        $users->push($admin);
         // login via Sanctum
-        Sanctum::actingAs($users[0], ['*']);
+        Sanctum::actingAs($admin, ['*']);
 
         $sortableFields = ['id', 'username', 'name', 'email', 'created_at',
                            'updated_at'];
@@ -196,10 +196,10 @@ class UserControllerTest extends AbstractApiTestCase
                 $json->where('total', $totalUsers)
                      ->where('per_page', $this->perPage)
                      ->has('data', 1, fn (AssertableJson $json) =>
-                     $json->where('id', $users[$totalUsers-1]->id)
-                          ->where('username', $users[$totalUsers-1]->username)
-                          ->where('name', $users[$totalUsers-1]->name)
-                          ->where('email', $users[$totalUsers-1]->email)
+                     $json->where('id', $users->last()->id)
+                          ->where('username', $users->last()->username)
+                          ->where('name', $users->last()->name)
+                          ->where('email', $users->last()->email)
                           ->missing('password')
                           ->etc()
                      )
@@ -216,7 +216,9 @@ class UserControllerTest extends AbstractApiTestCase
         // create enough users to trigger the pagination, default per page
         // limit in laravel is 15
         $totalUsers = $this->perPage + 1;
-        $users = User::factory()->count($totalUsers)->create();
+        $admin = User::first();
+        $users = User::factory()->count($this->perPage)->create();
+        $users->prepend($admin);
         $users[0]->assignRole('admin');
         // login via Sanctum
         Sanctum::actingAs($users[0], ['*']);
@@ -315,9 +317,8 @@ class UserControllerTest extends AbstractApiTestCase
 
     public function test_create_user()
     {
-        // create a user so there's at least one in the database
-        $user = User::factory()->create();
-        $user->assignRole('admin');
+        // first user is the seeded admin
+        $user = User::first();
         // login via Sanctum
         Sanctum::actingAs($user, ['*']);
         // this user is just generated and NOT stored in the database
@@ -355,9 +356,8 @@ class UserControllerTest extends AbstractApiTestCase
 
     public function test_update_user()
     {
-        // create a user so there's at least one in the database
-        $user = User::factory()->create();
-        $user->assignRole('admin');
+        // first user is the seeded admin
+        $user = User::first();
         $urlForUser = $this->url .'/'. $user->id;
         // login via Sanctum
         Sanctum::actingAs($user, ['*']);
@@ -385,11 +385,12 @@ class UserControllerTest extends AbstractApiTestCase
                  ->etc()
         );
         // check that all params can be changed
+        $expectedEmail = 'sample@example.com';
         $params = [
             'username' => $user->username . '1',
             'name' => $user->name . '1',
             'password' => $user->username . '1',
-            'email' => '1' . $user->email,
+            'email' => $expectedEmail,
         ];
         $resp = $this->putJson($urlForUser, $params);
         $resp->assertStatus(Status::HTTP_OK);
@@ -397,7 +398,7 @@ class UserControllerTest extends AbstractApiTestCase
             $json->has('id')
                  ->where('username', $user->username . '1')
                  ->where('name', $user->name . '1')
-                 ->where('email', '1' . $user->email)
+                 ->where('email', $expectedEmail)
                  ->missing('password')
                  ->etc()
         );
@@ -407,9 +408,8 @@ class UserControllerTest extends AbstractApiTestCase
 
     public function test_delete_user()
     {
-        // create a user so there's at least one in the database
-        $user = User::factory()->create();
-        $user->assignRole('admin');
+        // first user is the seeded admin
+        $user = User::first();
         // login via Sanctum
         Sanctum::actingAs($user, ['*']);
         // create a user to delete

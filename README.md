@@ -44,3 +44,10 @@ Role:
 * is_system - boolean indicating whether this is a system role
 * is_template - booleaning indicating whether this is a course role template
 * course_id - if a course-specific role, which course it's for
+
+## Environment Variables
+
+When seeding the database, a default admin user is created, the default admin user credentials can be specified via these env vars:
+
+* ADMIN_USERNAME - default admin user's username
+* ADMIN_PASSWORD - default admin user's password
