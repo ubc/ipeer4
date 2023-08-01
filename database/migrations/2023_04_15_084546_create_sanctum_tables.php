@@ -36,6 +36,7 @@ return new class extends Migration
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
+            $table->comment('used by laravel sanctum');
             $table->string('email')->primary();
             $table->string('token');
             $table->timestampTz('created_at')->useCurrent();
@@ -44,6 +45,7 @@ return new class extends Migration
         });
 
         Schema::create('failed_jobs', function (Blueprint $table) {
+            $table->comment('used by laravel sanctum');
             $table->id();
             $table->string('uuid')->unique();
             $table->text('connection');
@@ -56,6 +58,7 @@ return new class extends Migration
         });
 
         Schema::create('personal_access_tokens', function (Blueprint $table) {
+            $table->comment('used by laravel sanctum');
             $table->id();
             $table->morphs('tokenable');
             $table->string('name');
