@@ -26,23 +26,44 @@ class CreatePermissionTables extends Migration
         }
 
         Schema::create($tableNames['permissions'], function (Blueprint $table) {
-            $table->bigIncrements('id'); // permission id
+            $table->comment('used by laravel-permission');
+            $table->id();
             $table->string('name');       // For MySQL 8.0 use string('name', 125);
             $table->string('guard_name'); // For MySQL 8.0 use string('guard_name', 125);
-            $table->timestamps();
+            $table->text('desc')->nullable();
+            $table->boolean('is_template')->default(false)
+                  ->comment('Is a default template meant to be copied, not to be used directly');
+            $table->index('is_template');
+            $table->timestampTz('created_at')->useCurrent();
+            $table->timestampTz('updated_at')->useCurrent()
+                                             ->useCurrentOnUpdate();
 
             $table->unique(['name', 'guard_name']);
         });
 
         Schema::create($tableNames['roles'], function (Blueprint $table) use ($teams, $columnNames) {
-            $table->bigIncrements('id'); // role id
+            $table->comment('used by laravel-permission');
+            $table->id();
             if ($teams || config('permission.testing')) { // permission.testing is a fix for sqlite testing
                 $table->unsignedBigInteger($columnNames['team_foreign_key'])->nullable();
                 $table->index($columnNames['team_foreign_key'], 'roles_team_foreign_key_index');
             }
             $table->string('name');       // For MySQL 8.0 use string('name', 125);
             $table->string('guard_name'); // For MySQL 8.0 use string('guard_name', 125);
-            $table->timestamps();
+            $table->text('desc')->nullable();
+            $table->boolean('is_system')->default(false)
+                  ->comment('Is a system role not to be used at the course level');
+            $table->boolean('is_template')->default(false)
+                  ->comment('Is a default template copied by new courses, not to be used directly');
+            $table->index('is_template');
+            $table->unsignedBigInteger('course_id')->nullable()
+                  ->comment('Role is limited to a specific course');
+            $table->foreign('course_id')
+                  ->references('id')->on('courses')->onDelete('cascade');
+            $table->timestampTz('created_at')->useCurrent();
+            $table->timestampTz('updated_at')->useCurrent()
+                                             ->useCurrentOnUpdate();
+
             if ($teams || config('permission.testing')) {
                 $table->unique([$columnNames['team_foreign_key'], 'name', 'guard_name']);
             } else {
@@ -51,6 +72,7 @@ class CreatePermissionTables extends Migration
         });
 
         Schema::create($tableNames['model_has_permissions'], function (Blueprint $table) use ($tableNames, $columnNames, $teams) {
+            $table->comment('used by laravel-permission');
             $table->unsignedBigInteger(PermissionRegistrar::$pivotPermission);
 
             $table->string('model_type');
@@ -71,10 +93,14 @@ class CreatePermissionTables extends Migration
                 $table->primary([PermissionRegistrar::$pivotPermission, $columnNames['model_morph_key'], 'model_type'],
                     'model_has_permissions_permission_model_type_primary');
             }
+            $table->timestampTz('created_at')->useCurrent();
+            $table->timestampTz('updated_at')->useCurrent()
+                                             ->useCurrentOnUpdate();
 
         });
 
         Schema::create($tableNames['model_has_roles'], function (Blueprint $table) use ($tableNames, $columnNames, $teams) {
+            $table->comment('used by laravel-permission');
             $table->unsignedBigInteger(PermissionRegistrar::$pivotRole);
 
             $table->string('model_type');
@@ -95,9 +121,13 @@ class CreatePermissionTables extends Migration
                 $table->primary([PermissionRegistrar::$pivotRole, $columnNames['model_morph_key'], 'model_type'],
                     'model_has_roles_role_model_type_primary');
             }
+            $table->timestampTz('created_at')->useCurrent();
+            $table->timestampTz('updated_at')->useCurrent()
+                                             ->useCurrentOnUpdate();
         });
 
         Schema::create($tableNames['role_has_permissions'], function (Blueprint $table) use ($tableNames) {
+            $table->comment('used by laravel-permission');
             $table->unsignedBigInteger(PermissionRegistrar::$pivotPermission);
             $table->unsignedBigInteger(PermissionRegistrar::$pivotRole);
 
@@ -112,6 +142,14 @@ class CreatePermissionTables extends Migration
                 ->onDelete('cascade');
 
             $table->primary([PermissionRegistrar::$pivotPermission, PermissionRegistrar::$pivotRole], 'role_has_permissions_permission_id_role_id_primary');
+            $table->timestampTz('created_at')->useCurrent();
+            $table->timestampTz('updated_at')->useCurrent()
+                                             ->useCurrentOnUpdate();
+        });
+
+        Schema::table('course_user', function (Blueprint $table) use ($tableNames) {
+            $table->unsignedBigInteger('role_id')->nullable();
+            $table->foreign('role_id')->references('id')->on($tableNames['roles']);
         });
 
         app('cache')
@@ -132,6 +170,10 @@ class CreatePermissionTables extends Migration
             throw new \Exception('Error: config/permission.php not found and defaults could not be merged. Please publish the package configuration before proceeding, or drop the tables manually.');
         }
 
+        Schema::table('course_user', function (Blueprint $table) {
+            $table->dropForeign(['role_id']);
+            $table->dropColumn('role_id');
+        });
         Schema::drop($tableNames['role_has_permissions']);
         Schema::drop($tableNames['model_has_roles']);
         Schema::drop($tableNames['model_has_permissions']);
