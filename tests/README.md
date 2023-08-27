@@ -1,3 +1,10 @@
+### Stop tests on the first failure
+
+All tests are run by default, even if there are failures. To stop running tests
+when a test fails, add the `--stop-on-failure` option:
+
+    ./vendor/bin/sail artisan test --stop-on-failure
+
 ### Only run certain tests via filter
 
 To run just one test class:

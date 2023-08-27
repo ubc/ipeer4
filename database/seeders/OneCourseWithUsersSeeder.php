@@ -11,7 +11,7 @@ use App\Models\User;
 
 use Spatie\Permission\Models\Permission;
 
-class PermissionTestSeeder extends Seeder
+class OneCourseWithUsersSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -21,17 +21,21 @@ class PermissionTestSeeder extends Seeder
         $users = User::factory()->count(3)->create();
         $course = Course::factory()->hasAttached($users)->create();
 
-        $roleAdmin = Role::getSystem('admin');
         $roleInstructor = Role::getTemplate('instructor');
         $roleStudent = Role::getTemplate('student');
 
         $courseRoleInstructor = $roleInstructor->getCourseRole($course->id);
         $courseRoleStudent = $roleStudent->getCourseRole($course->id);
 
-        $users[0]->assignRole($roleAdmin);
-        $users[1]->courses()->updateExistingPivot($course->id, [
+        $users[0]->assignRole($courseRoleInstructor);
+        $users[0]->courses()->updateExistingPivot($course->id, [
             'role_id' => $courseRoleInstructor->id
         ]);
+        $users[1]->assignRole($courseRoleStudent);
+        $users[1]->courses()->updateExistingPivot($course->id, [
+            'role_id' => $courseRoleStudent->id
+        ]);
+        $users[2]->assignRole($courseRoleStudent);
         $users[2]->courses()->updateExistingPivot($course->id, [
             'role_id' => $courseRoleStudent->id
         ]);
