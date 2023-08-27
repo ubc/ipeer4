@@ -17,7 +17,7 @@ use App\Models\Course;
 use App\Models\Role;
 use App\Models\User;
 
-use Database\Seeders\PermissionTestSeeder;
+use Database\Seeders\OneCourseWithUsersSeeder;
 
 use Tests\Feature\Api\AbstractApiTestCase;
 
@@ -31,7 +31,7 @@ class PermissionTest extends AbstractApiTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->seed(PermissionTestSeeder::class);
+        $this->seed(OneCourseWithUsersSeeder::class);
     }
 
     private function getAdmin(): User

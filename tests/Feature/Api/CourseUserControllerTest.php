@@ -14,21 +14,30 @@ use Symfony\Component\HttpFoundation\Response as Status;
 use Laravel\Sanctum\Sanctum;
 
 use App\Models\Course;
+use App\Models\Role;
 use App\Models\User;
 
-use Tests\TestCase;
+use Database\Seeders\OneCourseWithUsersSeeder;
 
-class CourseUserControllerTest extends TestCase
+use Tests\Feature\Api\AbstractApiTestCase;
+
+class CourseUserControllerTest extends AbstractApiTestCase
 {
-    use RefreshDatabase;
-
     private int $perPage = 15;
+    private Course $course;
+    private User $instructor;
 
     private function login()
     {
-        // create a user and login as that user
-        $user = User::factory()->create();
+        $this->seed(OneCourseWithUsersSeeder::class);
+        // get the seeded course
+        $this->course = Course::first();
+        // get one instructor in the course
+        $instructorRole = Role::findByName('instructor')
+                              ->getCourseRole($this->course->id);
+        $user = User::role($instructorRole->name)->first();
         Sanctum::actingAs($user, ['*']);
+        $this->instructor = $user;
     }
 
     private function getUrl(Course $course, User $user = null): string
@@ -42,14 +51,8 @@ class CourseUserControllerTest extends TestCase
     {
         $this->login();
 
-        // Create a course with some users
-        $course = Course::factory()->create();
-        #$users = User::factory()->count(3)->hasAttached($course)->create();
-        $users = User::factory()->count(3)->create();
-        $course = Course::factory()->hasAttached($users)->create();
-
-        $resp = $this->getJson($this->getUrl($course));
-        //$resp->dump();
+        $resp = $this->getJson($this->getUrl($this->course));
+        $resp->dump();
         $resp->assertStatus(Status::HTTP_OK);
         $resp->assertJson(fn (AssertableJson $json) =>
             $json->where('total', 3)
@@ -61,8 +64,8 @@ class CourseUserControllerTest extends TestCase
                      'last_page_url'
                  ])
                  ->has('data', 3, fn (AssertableJson $json) =>
-                 $json->where('id', $users[0]->id)
-                      ->where('name', $users[0]->name)
+                 $json->where('id', $this->instructor->id)
+                      ->where('name', $this->instructor->name)
                       ->etc()
                  )
                  ->etc()
