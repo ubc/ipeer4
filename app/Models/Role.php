@@ -1,6 +1,7 @@
 <?php
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -58,7 +59,33 @@ class Role extends SpatieRole
         return $newRole;
     }
 
+    public function getCourseSpecificName(int $courseId): string
+    {
+        return "courseId.$courseId." . $this->name;
+    }
+
     // PUBLIC STATIC HELPER METHODS
+    
+    public static function getAllCourseRoles(int $courseId): Collection
+    {
+        $courseRoles = self::where('course_id', $courseId)->get();
+        // make sure that all template roles have a course role counterpart
+        $templateRoles = self::getAllTemplates();
+        foreach ($templateRoles as $templateRole) {
+            if ($courseRoles->contains('name',
+                            $templateRole->getCourseSpecificName($courseId))) {
+                continue;
+            }
+            $courseRole = $templateRole->getCourseRole($courseId);
+            $courseRoles->push($courseRole);
+        }
+        return $courseRoles;
+    }
+
+    public static function getAllTemplates(): Collection
+    {
+        return self::where('is_template', true)->get();
+    }
 
     public static function getTemplate(string $roleName): self
     {
@@ -75,9 +102,5 @@ class Role extends SpatieRole
     }
 
     // PRIVATE HELPER METHODS
-    private function getCourseSpecificName(int $courseId): string
-    {
-        return "courseId.$courseId." . $this->name;
-    }
 
 }

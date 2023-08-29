@@ -29,6 +29,7 @@ class PermissionSeeder extends Seeder
         // --- SYSTEM ROLES --- 
         $roleAdmin = Role::create([
             'name' => 'admin',
+            'display_name' => 'Admin',
             'desc' => 'System Role Admin',
             'is_system' => true
         ]);
@@ -50,11 +51,13 @@ class PermissionSeeder extends Seeder
         // --- COURSE ROLES ----
         $roleInstructor = Role::create([
             'name' => 'instructor',
+            'display_name' => 'Instructor',
             'desc' => 'Default settings for a course instructor',
             'is_template' => true
         ]);
         $roleStudent = Role::create([
             'name' => 'student',
+            'display_name' => 'Student',
             'desc' => 'Default settings for a course student',
             'is_template' => true
         ]);

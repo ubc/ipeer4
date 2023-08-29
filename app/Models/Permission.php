@@ -10,7 +10,7 @@ class Permission extends SpatiePermission
         // non-template permissions can be used directly
         if (!$this->is_template) return $this;
         // look for existing
-        $existingPermission = self::getPermission(
+        $existingPermission = static::getPermission(
             ['name' => $this->getNameWithCourseId($courseId)]);
         // need to create new
         if ($existingPermission) return $existingPermission;
@@ -24,6 +24,15 @@ class Permission extends SpatiePermission
 
     private function getNameWithCourseId(int $courseId): string
     {
-        return str_replace('courseId', "courseId.$courseId", $this->name);
+        return static::addCourseId($this->name, $courseId);
+    }
+
+    /**
+     * Helper that looks for 'courseId' in the string and replace it with
+     * 'courseId.1', where 1 is the courseId given.
+     */
+    public static function addCourseId(string $name, int $courseId): string
+    {
+        return str_replace('courseId', "courseId.$courseId", $name);
     }
 }

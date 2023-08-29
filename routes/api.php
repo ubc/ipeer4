@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Api\CourseController;
+use App\Http\Controllers\Api\CourseRoleController;
 use App\Http\Controllers\Api\CourseUserController;
 use App\Http\Controllers\Api\UserController;
 
@@ -31,5 +32,6 @@ Route::namespace('App\Http\Controllers\Api')->group(function() {
         Route::apiResource('user', UserController::class);
         Route::apiResource('course', CourseController::class);
         Route::apiResource('course.user', CourseUserController::class)->scoped();
+        Route::apiResource('course.role', CourseRoleController::class)->scoped();
     });
 });
