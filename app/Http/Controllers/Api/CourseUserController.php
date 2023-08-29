@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
+use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rule;
 
 use Symfony\Component\HttpFoundation\Response as Status;
 
@@ -11,6 +13,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Api\AbstractApiController;
 use App\Http\Requests\Paginated\CourseUserPaginatedRequest;
 use App\Models\Course;
+use App\Models\CourseUser;
 use App\Models\User;
 use App\Rules\BoolStr;
 
@@ -19,7 +22,19 @@ class CourseUserController extends AbstractApiController
 {
     public function index(CourseUserPaginatedRequest $request, Course $course)
     {
-        return $this->paginatedIndex($request, $course->users(), ['name']);
+        $this->authorize('viewAny', [CourseUser::class, $course]);
+        # Using eager loading's with() doesn't allow sorting on the relationship
+        # fields, so we have to do a join
+        $query = CourseUser::select([
+                               'course_user.*',
+                               'users.name',
+                               'users.username',
+                               'users.email',
+                               'roles.display_name AS role_name'
+                           ])
+                           ->join('users', 'users.id', '=', 'course_user.user_id')
+                           ->join('roles', 'roles.id', '=', 'course_user.role_id');
+        return $this->paginatedIndex($request, $query, ['name']);
     }
 
     /**
@@ -32,10 +47,19 @@ class CourseUserController extends AbstractApiController
 
     public function store(Request $request, Course $course)
     {
+        $this->authorize('create', [CourseUser::class, $course]);
         $data = $request->validate([
             'userIds' => 'required|exists:App\Models\User,id',
+            'roleId' => ['required',
+                // make sure the role exists and is for the right course
+                Rule::exists('App\Models\Role', 'id')->where(
+                    function (Builder $query) use ($course) {
+                        return $query->where('course_id', $course->id);
+                    }),
+            ],
         ]);
-        $course->users()->attach($data['userIds']);
+        $course->users()->attach($data['userIds'],
+                                 ['role_id' => $data['roleId']]);
         return response()->noContent();
     }
 
@@ -53,6 +77,7 @@ class CourseUserController extends AbstractApiController
      */
     public function destroy(Request $request, Course $course, User $user)
     {
+        $this->authorize('delete', [CourseUser::class, $course]);
         $courseName = $course->name;
         $userName = $user->username;
         $hasEntry = $course->users()->where('user_id', $user->id)->exists();
