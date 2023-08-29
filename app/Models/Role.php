@@ -3,6 +3,7 @@ namespace App\Models;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 use Spatie\Permission\Models\Role as SpatieRole;
 
@@ -17,6 +18,13 @@ class Role extends SpatieRole
     public function course(): BelongsTo
     {
         return $this->belongsTo(Course::class);
+    }
+
+    public function users(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class)
+                    ->using(CourseUser::class)
+                    ->withPivot('role_id');
     }
     
     // PUBLIC HELPER METHODS
