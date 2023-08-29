@@ -17,6 +17,7 @@ export default {
         {name: 'username', field: 'username', label: 'Username',sortable: true},
         {name: 'name', field: 'name', label: 'Name',sortable: true},
         {name: 'email', field: 'email', label: 'Email',sortable: true},
+        {name: 'role_name', field: 'role_name', label: 'Role',sortable: true},
       ],
       loading: false,
       selected: [],

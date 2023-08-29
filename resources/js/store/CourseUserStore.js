@@ -13,8 +13,9 @@ const courseUserStoreExt = {
     async getPage(courseId) {
       return await this.index(this.getUrl(courseId))
     },
-    async create(courseId, userIds) {
-      const resp = await axios.post(this.getUrl(courseId), {'userIds': userIds})
+    async create(courseId, userIds, roleId) {
+      const resp = await axios.post(this.getUrl(courseId),
+        {'userIds': userIds, 'roleId': roleId})
       return resp.data
     },
     async remove(courseId, userId) {

@@ -2,10 +2,12 @@
 import { mapStores } from 'pinia'
 import { useCourseUserStore } from '@/store/CourseUserStore'
 import { useUserSearchStore } from '@/store/UserSearchStore'
+import CourseRoleSelect from '@/component/input/CourseRoleSelect.vue'
 
 
 export default {
   components: {
+    CourseRoleSelect,
   },
   computed: {
     courseId() { return this.$route.params.courseId },
@@ -23,6 +25,7 @@ export default {
       visibleColumns: ['username', 'name', 'email'],
       loading: false,
       selected: [],
+      courseRole: null
     }
   },
   methods: {
@@ -52,7 +55,7 @@ export default {
       for (const selected of this.selected) {
         userIds.push(selected.id)
       }
-      this.courseUserStore.create(this.courseId, userIds)
+      this.courseUserStore.create(this.courseId, userIds, this.courseRole.id)
       this.$notify.ok("User '"+ this.selected[0].username +"' added to course")
     }
   },
@@ -87,8 +90,15 @@ export default {
       <template v-slot:top-left>
         <div class='col'>
           <ErrorBox class='q-mb-md' />
-          <q-btn color="primary" icon='add' label="Add Selected to Course"
-                 :disabled='selected.length <= 0' @click='addSelected()' />
+          <p class='text-h6'>Add selected user with role:</p>
+          <CourseRoleSelect :course-id='courseId' v-model='courseRole'
+                            label='Role' class='col-4'>
+            <template v-slot:after>
+              <q-btn color="primary" icon='add' label="Add"
+                     :disabled='selected.length <= 0'
+                     @click='addSelected()' />
+            </template>
+          </CourseRoleSelect>
         </div>
       </template>
 
