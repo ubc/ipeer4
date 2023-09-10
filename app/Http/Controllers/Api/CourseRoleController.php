@@ -23,11 +23,12 @@ class CourseRoleController extends AbstractApiController
      */
     public function index(Request $request, Course $course)
     {
+        $this->authorize('viewAny', [CourseRole::class, $course]);
         return Role::getAllCourseRoles($course->id);
     }
 
     /**
-     * Can't think of a use case for this, so not implemented for now.
+     * Can implement later for custom roles
      */
     public function show(Request $request, Course $course, Role $role)
     {
@@ -40,8 +41,7 @@ class CourseRoleController extends AbstractApiController
     }
 
     /**
-     * Can't think of a use case for editing an enrolment, since we only
-     * want to remove or add users to a course, so not implemented.
+     * Can implement later for custom roles
      */
     public function update(Request $request, Course $course, Role $role)
     {
@@ -49,7 +49,7 @@ class CourseRoleController extends AbstractApiController
     }
 
     /**
-     * Delete specified enrolment.
+     * Can implement later for custom roles
      */
     public function destroy(Request $request, Course $course, Role $role)
     {
