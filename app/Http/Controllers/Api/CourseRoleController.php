@@ -8,12 +8,11 @@ use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response as Status;
 
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\Api\AbstractApiController;
 use App\Models\Course;
 use App\Models\Role;
 
 
-class CourseRoleController extends AbstractApiController
+class CourseRoleController extends Controller
 {
     /**
      * List all course roles.

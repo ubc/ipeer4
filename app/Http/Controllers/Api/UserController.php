@@ -12,13 +12,15 @@ use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\Response as Status;
 
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\Api\AbstractApiController;
+use App\Http\Controllers\Traits\PaginatedIndex;
 use App\Http\Requests\Paginated\UserPaginatedRequest;
 use App\Models\User;
  
 
-class UserController extends AbstractApiController
+class UserController extends Controller
 {
+    use PaginatedIndex;
+
     public function __construct()
     {
         // tell Laravel to use UserPolicy to protect access to these methods

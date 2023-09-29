@@ -10,7 +10,7 @@ use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\Response as Status;
 
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\Api\AbstractApiController;
+use App\Http\Controllers\Traits\PaginatedIndex;
 use App\Http\Requests\Paginated\CourseUserPaginatedRequest;
 use App\Models\Course;
 use App\Models\CourseUser;
@@ -18,8 +18,10 @@ use App\Models\User;
 use App\Rules\BoolStr;
 
 
-class CourseUserController extends AbstractApiController
+class CourseUserController extends Controller
 {
+    use PaginatedIndex;
+
     public function index(CourseUserPaginatedRequest $request, Course $course)
     {
         $this->authorize('viewAny', [CourseUser::class, $course]);

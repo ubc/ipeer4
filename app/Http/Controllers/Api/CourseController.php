@@ -10,13 +10,15 @@ use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\Response as Status;
 
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\Api\AbstractApiController;
+use App\Http\Controllers\Traits\PaginatedIndex;
 use App\Http\Requests\Paginated\CoursePaginatedRequest;
 use App\Models\Course;
 
 
-class CourseController extends AbstractApiController
+class CourseController extends Controller
 {
+    use PaginatedIndex;
+
     public function __construct()
     {
         // tell Laravel to use UserPolicy to protect access to these methods

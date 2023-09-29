@@ -1,22 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Traits;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Relation;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Foundation\Validation\ValidatesRequests;
-use Illuminate\Http\Request;
-use Illuminate\Routing\Controller as BaseController;
-use Illuminate\Support\Facades\Log;
 
-use App\Http\Controllers\Controller;
 use App\Http\Requests\Paginated\AbstractPaginatedRequest;
 
-
-abstract class AbstractApiController extends Controller
-{
+trait PaginatedIndex {
     /**
      * Pagination requests need to return a set of pagination params that are
      * used by the frontend, this abstracts out a paginated index call that

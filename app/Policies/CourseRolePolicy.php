@@ -6,18 +6,20 @@ use App\Models\CourseRole;
 use App\Models\Course;
 use App\Models\Permission;
 use App\Models\User;
-use App\Policies\ApiPolicy;
+use App\Traits\CanCourse;
 
 use Illuminate\Auth\Access\Response;
 
 class CourseRolePolicy
 {
+    use CanCourse;
+
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user, Course $course): bool
     {
-        return ApiPolicy::canCourse('courseId.manageEnrolment', $user, $course);
+        return $this->canCourse('courseId.manageEnrolment', $user, $course);
     }
 
     /**

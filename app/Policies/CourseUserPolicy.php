@@ -6,17 +6,19 @@ use App\Models\Course;
 use App\Models\CourseUser;
 use App\Models\Permission;
 use App\Models\User;
-use App\Policies\ApiPolicy;
+use App\Traits\CanCourse;
 use Illuminate\Auth\Access\Response;
 
 class CourseUserPolicy
 {
+    use CanCourse;
+
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user, Course $course): bool
     {
-        return ApiPolicy::canCourse('courseId.manageEnrolment', $user, $course);
+        return $this->canCourse('courseId.manageEnrolment', $user, $course);
     }
 
     /**
@@ -24,7 +26,7 @@ class CourseUserPolicy
      */
     public function view(User $user, CourseUser $courseUser): bool
     {
-        return ApiPolicy::canCourse('courseId.manageEnrolment', $user, $course);
+        return $this->canCourse('courseId.manageEnrolment', $user, $course);
     }
 
     /**
@@ -32,7 +34,7 @@ class CourseUserPolicy
      */
     public function create(User $user, Course $course): bool
     {
-        return ApiPolicy::canCourse('courseId.manageEnrolment', $user, $course);
+        return $this->canCourse('courseId.manageEnrolment', $user, $course);
     }
 
     /**
@@ -40,7 +42,7 @@ class CourseUserPolicy
      */
     public function update(User $user, Course $course): bool
     {
-        return ApiPolicy::canCourse('courseId.manageEnrolment', $user, $course);
+        return $this->canCourse('courseId.manageEnrolment', $user, $course);
     }
 
     /**
@@ -48,7 +50,7 @@ class CourseUserPolicy
      */
     public function delete(User $user, Course $course): bool
     {
-        return ApiPolicy::canCourse('courseId.manageEnrolment', $user, $course);
+        return $this->canCourse('courseId.manageEnrolment', $user, $course);
     }
 
     /**
