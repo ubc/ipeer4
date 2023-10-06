@@ -2,35 +2,30 @@
 
 namespace App\Rules;
 
-use Illuminate\Contracts\Validation\Rule;
+use Closure;
+
+use Illuminate\Contracts\Validation\ValidationRule;
 
 /**
  * Stock Laravel boolean validation doesn't interpret the string 'true' as true
  * and 'false' as false. This custom rule lets us accept 'true' and 'false'
  * strings.
  */
-class BoolStr implements Rule
+class BoolStr implements ValidationRule
 {
     /**
-     * Determine if the validation rule passes.
-     *
-     * @param  string  $attribute
-     * @param  mixed  $value
-     * @return bool
+     * Run the validation rule.
      */
-    public function passes($attribute, $value)
+    public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        return is_bool(toBoolean($value));
+        if (!self::isBool($value)) {
+            $fail('Enter true ("1", "true") or false ("0", "false")');
+        }
     }
 
-    /**
-     * Get the validation error message.
-     *
-     * @return string
-     */
-    public function message()
+    public static function isBool(string $value): bool
     {
-        return __('validation.boolean');
+        return is_bool(toBoolean($value));
     }
 }
 
