@@ -11,29 +11,15 @@ use Laravel\Sanctum\Sanctum;
 
 use Tests\TestCase;
 use Tests\Feature\Api\AbstractApiTestCase;
+use Tests\Feature\Traits\CreateSecondCourseWithUsers;
 
-class AbstractApiCourseTestCase extends AbstractApiTestCase
+abstract class AbstractApiCourseTestCase extends AbstractApiTestCase
 {
     protected Course $course;
     protected Role $courseInstructorRole;
     protected Role $courseStudentRole;
     protected User $instructor;
     protected User $student;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->seed(OneCourseWithUsersSeeder::class);
-        $this->course = Course::first();
-        $this->courseInstructorRole = Role::getTemplate('instructor')
-                                          ->getCourseRole($this->course->id);
-        $this->instructor = User::role($this->courseInstructorRole->name)
-                                ->first();
-        $this->courseStudentRole = Role::getTemplate('student')
-                                       ->getCourseRole($this->course->id);
-        $this->student = User::role($this->courseStudentRole->name)
-                             ->first();
-    }
 
     protected function login(User $user): void
     {
@@ -48,5 +34,37 @@ class AbstractApiCourseTestCase extends AbstractApiTestCase
     protected function loginStudent(): void
     {
         $this->login($this->student);
+    }
+
+    /**
+     * We're copying how Illuminate\Foundation\Testing\TestCase.php initializes
+     * traits such as RefreshDatabase.
+     */
+    protected function setUpTraits()
+    {
+        $uses = parent::setUpTraits();
+
+        // later traits we might include can require a course already exists
+        $this->createCourseWithUsers();
+
+        if (isset($uses[CreateSecondCourseWithUsers::class])) {
+            $this->createSecondCourseWithUsers();
+        }
+
+        return $uses;
+    }
+
+    private function createCourseWithUsers()
+    {
+        $this->seed(OneCourseWithUsersSeeder::class);
+        $this->course = Course::first();
+        $this->courseInstructorRole = Role::getTemplate('instructor')
+                                          ->getCourseRole($this->course->id);
+        $this->instructor = User::role($this->courseInstructorRole->name)
+                                ->first();
+        $this->courseStudentRole = Role::getTemplate('student')
+                                       ->getCourseRole($this->course->id);
+        $this->student = User::role($this->courseStudentRole->name)
+                             ->first();
     }
 }
