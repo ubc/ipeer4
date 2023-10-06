@@ -12,9 +12,9 @@ use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\Response as Status;
 
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\Traits\PaginatedIndex;
 use App\Http\Requests\Paginated\UserPaginatedRequest;
 use App\Models\User;
+use App\Traits\Controller\PaginatedIndex;
  
 
 class UserController extends Controller

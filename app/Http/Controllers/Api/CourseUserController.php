@@ -10,13 +10,12 @@ use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\Response as Status;
 
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\Traits\PaginatedIndex;
 use App\Http\Requests\Paginated\CourseUserPaginatedRequest;
 use App\Models\Course;
 use App\Models\CourseUser;
 use App\Models\User;
 use App\Rules\BoolStr;
-
+use App\Traits\Controller\PaginatedIndex;
 
 class CourseUserController extends Controller
 {
