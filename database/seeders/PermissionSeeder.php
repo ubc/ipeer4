@@ -48,7 +48,7 @@ class PermissionSeeder extends Seeder
 
         $roleAdmin->syncPermissions([$courseAdmin, $userAdmin]);
 
-        // --- COURSE ROLES ----
+        // ---- COURSE ROLES ----
         $roleInstructor = Role::create([
             'name' => 'instructor',
             'display_name' => 'Instructor',
@@ -61,6 +61,7 @@ class PermissionSeeder extends Seeder
             'desc' => 'Default settings for a course student',
             'is_template' => true
         ]);
+        // ---- COURSE Permissions ----
         // create course template permissions. These are not used directly. We
         // create a copy, replace 'courseId' with 'courseId.id' to lock it to
         // down to a specific course, then use the copy.
@@ -74,13 +75,33 @@ class PermissionSeeder extends Seeder
             'desc' => 'Can see and modify user enrolments in their courses',
             'is_template' => true
         ]);
+        // -- Assignment permissions --
+        $viewPublishedAssignment = Permission::create([
+            'name' => 'courseId.viewPublishedAssignment',
+            'desc' => 'Can see published assignments in their courses',
+            'is_template' => true
+        ]);
+        $viewUnpublishedAssignment = Permission::create([
+            'name' => 'courseId.viewUnpublishedAssignment',
+            'desc' => 'Can see both published and unpublished assignments in their courses',
+            'is_template' => true
+        ]);
+        $editAssignment = Permission::create([
+            'name' => 'courseId.editAssignment',
+            'desc' => 'Can edit assignments in their courses',
+            'is_template' => true
+        ]);
         // assign permissions, note admin's access to everything is handled
         // separately, so we don't need to add every permission to it
         $roleInstructor->syncPermissions([
             $manageCourseInfo,
             $manageEnrolment,
+            $viewPublishedAssignment,
+            $viewUnpublishedAssignment,
+            $editAssignment,
         ]);
         $roleStudent->syncPermissions([
+            $viewPublishedAssignment,
         ]);
     }
 }

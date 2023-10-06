@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\Api\AssignmentController;
 use App\Http\Controllers\Api\CourseController;
 use App\Http\Controllers\Api\CourseRoleController;
 use App\Http\Controllers\Api\CourseUserController;
@@ -29,9 +30,13 @@ Route::namespace('App\Http\Controllers\Api')->group(function() {
     Route::post('/logout', 'LoginController@logout');
     // login required routes
     Route::middleware('auth:sanctum')->group(function() {
-        Route::apiResource('user', UserController::class);
         Route::apiResource('course', CourseController::class);
-        Route::apiResource('course.user', CourseUserController::class)->scoped();
-        Route::apiResource('course.role', CourseRoleController::class)->scoped();
+        Route::apiResource('course.assignment', AssignmentController::class)
+             ->scoped();
+        Route::apiResource('course.role', CourseRoleController::class)
+             ->scoped();
+        Route::apiResource('course.user', CourseUserController::class)
+             ->scoped();
+        Route::apiResource('user', UserController::class);
     });
 });

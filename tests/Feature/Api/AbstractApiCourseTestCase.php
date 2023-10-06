@@ -11,6 +11,7 @@ use Laravel\Sanctum\Sanctum;
 
 use Tests\TestCase;
 use Tests\Feature\Api\AbstractApiTestCase;
+use Tests\Feature\Traits\CreateAssignments;
 use Tests\Feature\Traits\CreateSecondCourseWithUsers;
 
 abstract class AbstractApiCourseTestCase extends AbstractApiTestCase
@@ -47,6 +48,9 @@ abstract class AbstractApiCourseTestCase extends AbstractApiTestCase
         // later traits we might include can require a course already exists
         $this->createCourseWithUsers();
 
+        if (isset($uses[CreateAssignments::class])) {
+            $this->createAssignments($this->course);
+        }
         if (isset($uses[CreateSecondCourseWithUsers::class])) {
             $this->createSecondCourseWithUsers();
         }
